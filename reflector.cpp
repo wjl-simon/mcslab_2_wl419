@@ -2,12 +2,13 @@
 #include <fstream>
 #include "errors.h"
 #include <cstdlib>
-#include "plugboard.h"
+#include "reflector.h"
 
 using namespace std;
 
+
 /* Return true if given a white sapce, otherwise false */
-bool Plugboard::IsWhiteSpace(char ch)
+bool Reflector::IsWhiteSpace(char ch)
 {
   if(ch==' ' || ch=='\t' || ch=='\n' || ch=='\v' || ch=='\f' || ch=='\r') return true;
   else return false;
@@ -15,7 +16,7 @@ bool Plugboard::IsWhiteSpace(char ch)
 
 
 /* Return true if given a digit(0-9), otherwise false  */
-bool Plugboard::IsDigit(char ch)
+bool Reflector::IsDigit(char ch)
 {
   if(ch >= '0' && ch <= '9') return true;
   else return false;
@@ -23,25 +24,11 @@ bool Plugboard::IsDigit(char ch)
 
 
 /* Return false if the file connects a contact with itself or with more than one other  */
-bool Plugboard:: IsLegalContact()
+bool Reflector:: IsLegalContact()
 {
-   // for(int i = 0; i <= letterNum-2; i=i+2)
-   // {
-   //   // Check if connecting with itself
-   //   if(letters[i] == letters[i+1])
-   //     return false;
-   //   else
-   //   {
-   //    // Check if a contact conncts with more than one other contact
-   //     for(int j = i+2; j < letterNum-2; j=j+2)
-   //       if(letters[i]==letters[j] || letters[i]==letters[j+1] ||
-   //          letters[i+1]==letters[j] || letters[i+1]==letters[j+1])
-   //         return false;
-   //   }
-   // }
   // It's legal means every digit is unique
-  for(int i = 0; i < letterNum; i++)
-    for(int j = i+1; j < letterNum; j++)
+  for(int i = 0; i < 26; i++) // should have exacly 13 pairs of digits
+    for(int j = i+1; j < 26; j++)
       if(letters[i] == letters[j])
         return false;
     
@@ -50,27 +37,25 @@ bool Plugboard:: IsLegalContact()
 
 
 /* Convert 0-based letters (char) into Latin letters(char) */
-char Plugboard::Letter0Based2Char(char num) { return (char)(num - 48 + 65); }
+char Reflector::Letter0Based2Char(char num) { return (char)(num - 48 + 65); }
 
-char Plugboard::Letter0Based2Char(char tens, char ones)
+char Reflector::Letter0Based2Char(char tens, char ones)
 {
   return (char)(10 * (tens-48) + (ones-48) + 65);
 }
 
 
 /* Default constructor */
-Plugboard:: Plugboard(): letterNum(0), isLoaded(false)
+Reflector(): isLoaded(false)
 {
-  // Initilise the letters array
   for(int i = 0; i < 26; i++) letters[i] = '?';
 }
 
-
 /* Load the plugboard configuration */
-int Plugboard::LoadConfig(const char* pbConfigFileName)
+int Plugboard::LoadConfig(const char* rfConfigFileName)
 {
-  //=== 1. Open the file giving plugboard configuration
-  ifstream ipfile; ipfile.open(pbConfigFileName);
+  //=== 1. Open the file giving reflector configuration
+  ifstream ipfile; ipfile.open(rfConfigFileName);
   if(ipfile.fail())
   {
     cerr << "Cannot open plugboard configuration file" << endl;
@@ -100,8 +85,8 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
         }
         else
         {
-          cerr << "INVALID INDEX (not between 0 and 25) in the plugboard config!" << endl;
-          return INVALID_INDEX;
+          cerr << "NON_NUMERIC_CHARACTER (not between 0 and 25) in the reflector config!" << endl;
+          return NON_NUMERIC_CHARACTER;
         }
       }
       else if(IsWhiteSpace(next)) // current is digit, next is ws: a one-digit number
@@ -109,38 +94,38 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
         letters_temp[i] = Letter0Based2Char(current);
         ipfile >> ws; ipfile.get(current);
       }
-      else // cuurent is digit, next is invalid
+      else // cuurent is a digit, next is invalid
       {
-        cerr << "NON_NUMERIC_CHARACTER in the plugboard config!" << endl;
+        cerr << "NON_NUMERIC_CHARACTER in the reflector config!" << endl;
         return NON_NUMERIC_CHARACTER;
       }
     }
-    else if(IsWhiteSpace(current)) // current is ws
+    else if(IsWhiteSpace(current)) // current is a ws
     {
       ipfile >> ws;
       ipfile.get(current);
     }
     else // current is invalid
     {
-      cerr << "NON_NUMERIC_CHARACTER in the plugboard config!" << endl;
+      cerr << "NON_NUMERIC_CHARACTER in the reflector config!" << endl;
       return NON_NUMERIC_CHARACTER;
     }
   }
 
-  //=== 3. Test if the number of numbers is not even
-  letterNum = i; // if the program runs here then the numbers in the file shall be valid
-  if(letterNum % 2 != 0)
+  //=== 3. Test if the number of numbers is 26 (13 pairs)
+  //letterNum = i; // if the program runs here then the numbers in the file shall be valid
+  if(i != 26)
   {
-    cerr << "INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS (odd number of numbers) "
-         << "in the plugboard config!" << endl;
+    cerr << "INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS (26 number of numbers) "
+         << "in the reflector config!" << endl;
     return INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
   }
 
   //=== 4. Test if the file attemp to connect a contact to itself or more than one other
   if(!IsLegalContact())
   {
-    cerr << "IMPOSSIBLE_PLUGBOARD_CONFIGURATION in the plugboard config!" << endl;
-    return IMPOSSIBLE_PLUGBOARD_CONFIGURATION;
+    cerr << "INVALID REFLECTOR MAPPING in the reflector config!" << endl;
+    return INVALID REFLECTOR MAPPING;
   }
     
   //=== 5. Everything's Done
@@ -150,12 +135,12 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
 }
 
 
-/* Swap  letters (the functionality of plugboard) */
-void Plugboard::SwapLetters(char& letter)
+/* Swap  letters (the functionality of reflector) */
+void Reflector::SwapLetters(char& letter)
 {
   if(isLoaded) // if sucessfully loaded
   {
-    for(int i = 0; i <= letterNum - 2; i=i+2)
+    for(int i = 0; i <= 26 - 2; i=i+2) // the 13th pair is element number 24 and 25
       if(letter == letters[i])
       {
         letter = letters[i+1];

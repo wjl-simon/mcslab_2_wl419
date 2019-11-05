@@ -1,2 +1,4 @@
+CXXFLAGS = -g -Wall -Wextra
+
 enigma: *.cpp *.h
-	g++ -g -Wall *.cpp *.h -o enigma
+	g++ $(EXXFLAGS) *.cpp *.h -o $@
