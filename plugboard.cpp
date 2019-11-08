@@ -3,27 +3,13 @@
 #include "errors.h"
 #include <cstdlib>
 #include "plugboard.h"
+#include "helper.h"
 
 using namespace std;
 
-/* Return true if given a white sapce, otherwise false */
-bool Plugboard::IsWhiteSpace(char ch)
-{
-  if(ch==' ' || ch=='\t' || ch=='\n' || ch=='\v' || ch=='\f' || ch=='\r') return true;
-  else return false;
-}
-
-
-/* Return true if given a digit(0-9), otherwise false  */
-bool Plugboard::IsDigit(char ch)
-{
-  if(ch >= '0' && ch <= '9') return true;
-  else return false;
-}
-
 
 /* Return false if the file connects a contact with itself or with more than one other  */
-bool Plugboard:: IsLegalContact()
+bool Plugboard:: IsLegalContact(char mapping[])
 {
    // for(int i = 0; i <= letterNum-2; i=i+2)
    // {
@@ -42,19 +28,10 @@ bool Plugboard:: IsLegalContact()
   // It's legal means every digit is unique
   for(int i = 0; i < letterNum; i++)
     for(int j = i+1; j < letterNum; j++)
-      if(letters[i] == letters[j])
+      if(mapping[i] == mapping[j])
         return false;
     
   return true;
-}
-
-
-/* Convert 0-based letters (char) into Latin letters(char) */
-char Plugboard::Letter0Based2Char(char num) { return (char)(num - 48 + 65); }
-
-char Plugboard::Letter0Based2Char(char tens, char ones)
-{
-  return (char)(10 * (tens-48) + (ones-48) + 65);
 }
 
 
@@ -74,7 +51,7 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
   if(ipfile.fail())
   {
     cerr << "Cannot open plugboard configuration file" << endl;
-    exit(-1);
+    exit(ERROR_OPENING_CONFIGURATION_FILE);
   }
 
   
@@ -96,7 +73,7 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
         if(current=='1' || (current=='2' && next>='0' && next<='5'))
         {
           letters_temp[i] = Letter0Based2Char(current,next);
-          ipfile.get(current); ipfile.get(current); // skip the "next" to get the one after 
+          ipfile.get(current); ipfile >> ws; // skip the "next" to get the one after 
         }
         else
         {
@@ -107,7 +84,7 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
       else if(IsWhiteSpace(next)) // current is digit, next is ws: a one-digit number
       {
         letters_temp[i] = Letter0Based2Char(current);
-        ipfile >> ws; ipfile.get(current);
+        ipfile.get(current); ipfile >> ws; 
       }
       else // cuurent is digit, next is invalid
       {
@@ -118,7 +95,7 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
     else if(IsWhiteSpace(current)) // current is ws
     {
       ipfile >> ws;
-      ipfile.get(current);
+      //ipfile.get(current);
     }
     else // current is invalid
     {
@@ -126,7 +103,7 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
       return NON_NUMERIC_CHARACTER;
     }
   }
-
+  
   //=== 3. Test if the number of numbers is not even
   letterNum = i; // if the program runs here then the numbers in the file shall be valid
   if(letterNum % 2 != 0)
@@ -137,7 +114,7 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
   }
 
   //=== 4. Test if the file attemp to connect a contact to itself or more than one other
-  if(!IsLegalContact())
+  if(!IsLegalContact(letters_temp))
   {
     cerr << "IMPOSSIBLE_PLUGBOARD_CONFIGURATION in the plugboard config!" << endl;
     return IMPOSSIBLE_PLUGBOARD_CONFIGURATION;
@@ -145,7 +122,8 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
     
   //=== 5. Everything's Done
   ipfile.close(); isLoaded = true;
-  for(int i = 0; i < 26; i++) letters[i] == letters_temp[i]; // write on the letters arrray 
+  for(int i = 0; i < 26; i++)
+    letters[i] = letters_temp[i]; 
   return NO_ERROR;
 }
 
@@ -155,7 +133,7 @@ void Plugboard::SwapLetters(char& letter)
 {
   if(isLoaded) // if sucessfully loaded
   {
-    for(int i = 0; i <= letterNum - 2; i=i+2)
+    for(int i = 0; i <= letterNum-2; i = i+2)
       if(letter == letters[i])
       {
         letter = letters[i+1];

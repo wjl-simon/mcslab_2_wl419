@@ -1,24 +1,16 @@
 #ifndef PLUGBOARD_H
 #define PLUGBOARD_H
 
-//using namespace std;
 
 class Plugboard
 {
   //int letters[26]; // 0-base letters, e.g. '0' means 'A', '1' means 'B'
   char letters[26]; // the upper case letters. It remains unchanged if loading fails
   int letterNum; // number of numbers in letters array. It won't be changed if loading fails
-  bool isLoaded; // flag for if sucessfully loaded
-    
-  /* Return true if given a white sapce, otherwise false */
-  bool IsWhiteSpace(char ch);
-  /* Return true if given a digit(0-9), otherwise false  */
-  bool IsDigit(char ch);
+  bool isLoaded; // flag for if config sucessfully loaded
+
   /* Return false if the file connects a contact with itself or with more than one other  */
-  bool IsLegalContact();
-  /* Convert 0-based letters into char */
-  char Letter0Based2Char(int num); // convert from 1-digit num
-  char Letter0Based2Char(char tens, char ones); // convert from 2-digit num
+  bool IsLegalContact(char mapping[]);
  
  public:
   /* Default constructor */
