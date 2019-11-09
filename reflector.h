@@ -10,8 +10,9 @@ class Reflector
   bool IsLegalContact(char mapping[]);
   
  public:
-  /* Default constructor */
+  /* Constructors */
   Reflector();
+  Reflector(const char* rfConfigFileName);
   /* Load the reflector configuration */
   int LoadConfig(const char* rfConfigFileName);
   /* Swap the letters (the functionality of reflector) */

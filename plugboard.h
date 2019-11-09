@@ -4,7 +4,6 @@
 
 class Plugboard
 {
-  //int letters[26]; // 0-base letters, e.g. '0' means 'A', '1' means 'B'
   char letters[26]; // the upper case letters. It remains unchanged if loading fails
   int letterNum; // number of numbers in letters array. It won't be changed if loading fails
   bool isLoaded; // flag for if config sucessfully loaded
@@ -13,8 +12,9 @@ class Plugboard
   bool IsLegalContact(char mapping[]);
  
  public:
-  /* Default constructor */
+  /* Constructors */
   Plugboard();
+  Plugboard(const char* pbConfigFileName);
   /* Load the plugboard configuration */
   int LoadConfig(const char* pbConfigFileName);
   /* Swap the letters (the functionality of plugboard) */

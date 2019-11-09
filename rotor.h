@@ -19,8 +19,9 @@ class Rotor
   void Rotate();
   
  public:
-  /* Default Constructor*/
+  /* Constructors*/
   Rotor();
+  Rotor(const char* rtConfigFilename, const char* rtStartingPosilename);
   /* Load the configuration for this rotor  */
   int LoadConfig(const char* rtConfigFilename);
   /* Load the Starting position of the rotors */

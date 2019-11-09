@@ -35,11 +35,21 @@ bool Plugboard:: IsLegalContact(char mapping[])
 }
 
 
-/* Default constructor */
+/* Constructors */
 Plugboard:: Plugboard(): letterNum(0), isLoaded(false)
 {
   // Initilise the letters array
   for(int i = 0; i < 26; i++) letters[i] = '?';
+}
+
+
+Plugboard:: Plugboard(const char* pbConfigFileName): letterNum(0), isLoaded(false)
+{
+  // Initilise the letters array
+  for(int i = 0; i < 26; i++) letters[i] = '?';
+
+  // Load config
+  int e = this->LoadConfig(pbConfigFileName); if(e) exit(e);
 }
 
 
@@ -93,10 +103,7 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
       }
     }
     else if(IsWhiteSpace(current)) // current is ws
-    {
       ipfile >> ws;
-      //ipfile.get(current);
-    }
     else // current is invalid
     {
       cerr << "NON_NUMERIC_CHARACTER in the plugboard config!" << endl;

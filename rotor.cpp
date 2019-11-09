@@ -17,14 +17,13 @@ bool Rotor::IsLegalContact(int mapping[], int notch[])
   for(int i = 0; i < 26; i++)
     for(int j = i+1; j < 26; j++)
       if(mapping[i] == mapping[j])
-        {//cout<<"mapping!!!"<<endl;
-          return false;}
+        return false;
+  
   // Notch postions should also be unique
   for(int i = 0; i < 26 && notch[i]!=-1; i++)
     for(int j = i+1; j < 26 && notch[j]!=-1; j++)
       if(notch[i] == notch[j])
-        {//cout<<"notch!!!"<<endl;
-          return false;}
+        return false;
   return true;
 }
 
@@ -41,20 +40,36 @@ void Rotor::Rotate()
     if(i > 0) letterAtAbsPos[i] = letterAtAbsPos[i-1];
     else letterAtAbsPos[i] = temp;
   }
-  cout << "rotor " << rotorLabel << " rotates! Now the pos is:" << endl;
-  for(int i =0; i<26;i++)
-    cout << letterAtAbsPos[i] << ' ';
-  cout << endl;
+  // cout << "rotor " << rotorLabel << " rotates! Now the pos is:" << endl;
+  // for(int i =0; i<26;i++)
+  //   cout << letterAtAbsPos[i] << ' ';
+  // cout << endl;
 }
 
 
-/* Default Constructor*/
+/* Constructors*/
 Rotor::Rotor(): isConfigLoaded(false),isStartingPosLoaded(false),startingPos(-1)
 {
   for(int i = 0; i < 26; i++){ letterAtAbsPos[i] = i; mapAbs2Abs[i] = -1; notch[i] = -1; }
   currentRotorNum++; // increment by 1 for each new rotor instance
   rotorLabel = currentRotorNum;
-  cout << "This is rotor " << rotorLabel << endl;
+  //  cout << "This is rotor " << rotorLabel << endl;
+}
+
+
+Rotor::Rotor(const char* rtConfigFilename, const char* rtStartingPosilename):
+  isConfigLoaded(false),isStartingPosLoaded(false),startingPos(-1)
+{
+  for(int i = 0; i < 26; i++){ letterAtAbsPos[i] = i; mapAbs2Abs[i] = -1; notch[i] = -1; }
+  currentRotorNum++; // increment by 1 for each new rotor instance
+  rotorLabel = currentRotorNum;
+
+  // Load configs
+  int e = this->LoadConfig(rtConfigFilename); if(e) exit(e);
+  e = LoadStartingPos(rtStartingPosilename); if(e) exit(e);
+
+  // Set starting position of the rotor
+  this->SetPosToStartingPos();
 }
 
 
@@ -117,10 +132,7 @@ int Rotor::LoadConfig(const char* rtConfigFilename)
       }
     }
     else if(IsWhiteSpace(current)) // current is ws
-    {
       ipfile >> ws;
-      //ipfile.get(current);
-    }
     else // current is invalid
     {
       cerr << "NON_NUMERIC_CHARACTER in the rotor config!" << endl;
@@ -140,21 +152,20 @@ int Rotor::LoadConfig(const char* rtConfigFilename)
   ipfile.close(); isConfigLoaded = true;
   for(int i = 0; i < 26; i++)
   {
-    mapAbs2Abs[i] = mapping_temp[i]; notch[i] = notch_temp[i];
-   
+    mapAbs2Abs[i] = mapping_temp[i];
+    notch[i] = notch_temp[i]; 
   }
-  cout << "rotor " << rotorLabel << " after config its Abs2Abs mapping:" << endl;
-  for(int i = 0; i<26; i++)
-    {
-      cout << mapAbs2Abs[i] << ' ';
-    }
-  cout << endl << " And its notches are:" <<endl;
-  for(int i = 0; i<26; i++)
-    {
-      cout << notch[i] << ' ';
-    }
-  cout << endl << endl;
-
+  // cout << "rotor " << rotorLabel << " after config its Abs2Abs mapping:" << endl;
+  // for(int i = 0; i<26; i++)
+  //   {
+  //     cout << mapAbs2Abs[i] << ' ';
+  //   }
+  // cout << endl << " And its notches are:" <<endl;
+  // for(int i = 0; i<26; i++)
+  //   {
+  //     cout << notch[i] << ' ';
+  //   }
+  // cout << endl << endl;
   return NO_ERROR;
 }
 
@@ -204,6 +215,7 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
         {
           startingPos = DigitChar2Int(current); break;
         }
+        
         ipfile.get(current); ipfile >> ws;
       }
       else // cuurent is digit, next is invalid
@@ -213,10 +225,7 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
       }
     }
     else if(IsWhiteSpace(current)) // current is ws
-    {
       ipfile >> ws;
-      //ipfile.get(current);
-    }
     else // current is invalid
     {
       cerr << "NON_NUMERIC_CHARACTER in the rotor starting position!" << endl;
@@ -224,7 +233,7 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
     }
   }
 
-  cout << "statring position is " << startingPos << endl;
+  //  cout << "statring position is " << startingPos << endl;
 
   //=== 3. Check if there is a starting position  
   if(i != rotorLabel)
@@ -234,7 +243,8 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
   }
   
   //=== 4. Everything's Done
-  ipfile.close(); isStartingPosLoaded = true; return NO_ERROR;
+  ipfile.close(); isStartingPosLoaded = true;
+  return NO_ERROR;
 }
 
 
@@ -268,14 +278,7 @@ bool Rotor::MapForwards(char& ch)
     // When a key is pressed a rotation happens at the rightmost rotor before closing the circuit
     if(rotorLabel == 1)
       Rotate();
-
-  //   cout << "The cuurent position of rotor " << rotorLabel << " is :" << endl;
-  //   for(int i = 0; i<26; i++)
-  //   {
-  //     cout << letterAtAbsPos[i] << ' ';
-  //   }
-  // cout << endl << endl;
-
+    
     // Cicuit close, perform the mapping
     int preimageAbsPos = 0; // abs pos of the source letter mapping from
     for(int i = 0; i < 26; i++)
@@ -287,7 +290,7 @@ bool Rotor::MapForwards(char& ch)
     int imageAbsPos = mapAbs2Abs[preimageAbsPos]; // abs pos of the destination letter
     ch = Letter0BasedInt2Char(letterAtAbsPos[imageAbsPos]);
 
-    cout << "Rotor " << rotorLabel << " maps forwards into " << ch << endl; 
+    //cout << "Rotor " << rotorLabel << " maps forwards into " << ch << endl; 
     
     // Check if there is a notch at the top absolute reference position
     for(int i = 0; notch[i]!=-1 && i < 26; i++)
@@ -325,7 +328,7 @@ void Rotor::MapBackwards(char& ch)
       }
 
     ch = Letter0BasedInt2Char(letterAtAbsPos[preimageAbsPos]);
-    cout << "Rotor " << rotorLabel << " maps backwards into " << ch << endl;
+    //cout << "Rotor " << rotorLabel << " maps backwards into " << ch << endl;
   }
   else return;
 }

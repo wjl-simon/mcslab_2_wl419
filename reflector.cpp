@@ -21,11 +21,21 @@ bool Reflector:: IsLegalContact(char mapping[])
 }
 
 
-/* Default constructor */
+/* Constructors */
 Reflector::Reflector(): isLoaded(false)
 {
   for(int i = 0; i < 26; i++) letters[i] = '?';
 }
+
+
+Reflector::Reflector(const char* rfConfigFileName): isLoaded(false)
+{
+  for(int i = 0; i < 26; i++) letters[i] = '?';
+
+  // Load Config
+  int e = this->LoadConfig(rfConfigFileName); if(e) exit(e);
+}
+
 
 /* Load the plugboard configuration */
 int Reflector::LoadConfig(const char* rfConfigFileName)
@@ -77,10 +87,7 @@ int Reflector::LoadConfig(const char* rfConfigFileName)
       }
     }
     else if(IsWhiteSpace(current)) // current is a ws
-    {
       ipfile >> ws;
-      //ipfile.get(current);
-    }
     else // current is invalid
     {
       cerr << "NON_NUMERIC_CHARACTER in the reflector config!" << endl;
@@ -106,12 +113,10 @@ int Reflector::LoadConfig(const char* rfConfigFileName)
     
   //=== 5. Everything's Done
   ipfile.close(); isLoaded = true;
-  cout << "reflector mapping:" << endl;
+  // cout << "reflector mapping:" << endl;
   for(int i = 0; i < 26; i++)
-    {letters[i] = letters_temp[i]; // write on the letters arrray
-      cout << letters[i] << ' ';
-    }
-  cout << endl;
+    letters[i] = letters_temp[i]; // write on the letters arrray
+  //cout << endl;
   return NO_ERROR;
 }
 
