@@ -19,10 +19,10 @@ int main(int argc, char**argv)
 
   cout << "Please input 20 uppercase letters" << endl;
   // Text from std input strea
-  char original[20];
+  char original[26];
   char temp;
   //  cin.getline(original,15) >> ws;
-  for(int i = 0; i < 20; i++)
+  for(int i = 0; i < 26; i++)
   {
     cin >> ws >> temp;
     if( temp >= 'A' && temp <='Z')
@@ -34,13 +34,13 @@ int main(int argc, char**argv)
 
   // print out the text
   cout << "the original text is:" << endl;
-  for(int i = 0; i < 20; i++)
+  for(int i = 0; i < 26; i++)
     cout << original[i];
   cout << endl;
 
   // Encription
   cout << "the ciphertext is:" << endl;
-  for(int i = 0; i < 20; i++)
+  for(int i = 0; i < 26; i++)
     if(original[i]!='\0')
       cout << EnigmaMachine(original[i],pb,rt1,rt2,rt3,rf);
   cout << endl << endl;
@@ -50,7 +50,7 @@ int main(int argc, char**argv)
   
   // Decription
   cout << "the decripted text is: " << endl;
-  for(int i = 0; i < 20; i++)
+  for(int i = 0; i < 26; i++)
     if(original[i]!='\0')
       cout << EnigmaMachine(original[i],pb,rt1,rt2,rt3,rf);
   cout << endl;
