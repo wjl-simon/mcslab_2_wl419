@@ -20,12 +20,12 @@ int main(int argc, char**argv)
   if(argc < 4) return INSUFFICIENT_NUMBER_OF_PARAMETERS;
   else if(argc == 4)
   {
-    cout << "Please input 26 uppercase letters" << endl;
+    //cout << "Please input 26 uppercase letters" << endl;
     // Text from std input strea
-    char original[26];
+    char original[50];
     char temp;
     //  cin.getline(original,15) >> ws;
-    for(int i = 0; i < 26; i++)
+    for(int i = 0; i < 50; i++)
       {
         cin >> ws >> temp;
         if( temp >= 'A' && temp <='Z')
@@ -35,15 +35,15 @@ int main(int argc, char**argv)
       }
     cout << endl << endl;
 
-    // print out the text
-    cout << "the original text is:" << endl;
-    for(int i = 0; i < 26; i++)
-      cout << original[i];
-    cout << endl;
+    // // print out the text
+    // cout << "the original text is:" << endl;
+    // for(int i = 0; i < 50; i++)
+    //   cout << original[i];
+    // cout << endl;
 
     // Encription
-    cout << "the ciphertext is:" << endl;
-    for(int i = 0; i < 26; i++)
+    //    cout << "the ciphertext is:" << endl;
+    for(int i = 0; i < 50; i++)
       if(original[i]!='\0')
         cout << EnigmaMachine(original[i],pb,nullptr,argc-4,rf);
     cout << endl << endl;
@@ -57,9 +57,9 @@ int main(int argc, char**argv)
       rt[i] = new Rotor(argv[i+3],argv[argc-1]); // argv[argc-1] is the starting position file;
 
 
-    cout << "Please input 26 uppercase letters" << endl;
+    //cout << "Please input 26 uppercase letters" << endl;
     // Text from std input strea
-    char original[26];
+    char original[50];
     char temp;
     //  cin.getline(original,15) >> ws;
     for(int i = 0; i < 26; i++)
@@ -72,14 +72,14 @@ int main(int argc, char**argv)
       }
     cout << endl << endl;
 
-    // print out the text
-    cout << "the original text is:" << endl;
-    for(int i = 0; i < 26; i++)
-      cout << original[i];
-    cout << endl;
+    // // print out the text
+    // cout << "the original text is:" << endl;
+    // for(int i = 0; i < 26; i++)
+    //   cout << original[i];
+    // cout << endl;
 
     // Encription
-    cout << "the ciphertext is:" << endl;
+    //    cout << "the ciphertext is:" << endl;
     for(int i = 0; i < 26; i++)
       if(original[i]!='\0')
         cout << EnigmaMachine(original[i],pb,rt,argc-4,rf);
