@@ -11,20 +11,6 @@ using namespace std;
 /* Return false if the file connects a contact with itself or with more than one other  */
 bool Plugboard:: IsLegalContact(char mapping[])
 {
-   // for(int i = 0; i <= letterNum-2; i=i+2)
-   // {
-   //   // Check if connecting with itself
-   //   if(letters[i] == letters[i+1])
-   //     return false;
-   //   else
-   //   {
-   //    // Check if a contact conncts with more than one other contact
-   //     for(int j = i+2; j < letterNum-2; j=j+2)
-   //       if(letters[i]==letters[j] || letters[i]==letters[j+1] ||
-   //          letters[i+1]==letters[j] || letters[i+1]==letters[j+1])
-   //         return false;
-   //   }
-   // }
   // It's legal means every digit is unique
   for(int i = 0; i < letterNum; i++)
     for(int j = i+1; j < letterNum; j++)
@@ -98,7 +84,7 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
       }
       else // cuurent is digit, next is invalid
       {
-        cerr << "NON_NUMERIC_CHARACTER in the plugboard config!" << endl;
+        cerr << "Non-numeric character in plugboard file plugboard.pb" << endl;
         return NON_NUMERIC_CHARACTER;
       }
     }
@@ -106,7 +92,7 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
       ipfile >> ws;
     else // current is invalid
     {
-      cerr << "NON_NUMERIC_CHARACTER in the plugboard config!" << endl;
+      cerr << "Non-numeric character in plugboard file plugboard.pb" << endl;
       return NON_NUMERIC_CHARACTER;
     }
   }

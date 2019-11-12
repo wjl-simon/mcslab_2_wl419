@@ -14,28 +14,31 @@ char EnigmaMachine(char &ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& r
 int main(int argc, char**argv)
 {
 
-  // The plubboard, the relector and the rotors
+  // Text to be encripted
+  string text; getline(cin,text); int const TEXTLENG = text.length();
+  
+  // The plubboard and the relector
   Plugboard pb(argv[1]); Reflector rf(argv[2]);
 
-  if(argc < 4) return INSUFFICIENT_NUMBER_OF_PARAMETERS;
+  // Rotor initilisation
+  if(argc < 4)
+  {
+    cerr << "usage: enigma plugboard-file reflector-file (<rotor-file>)* rotor-positions" << endl;
+    return INSUFFICIENT_NUMBER_OF_PARAMETERS;
+  }
   else if(argc == 4)
   {
-    //cout << "Please input 26 uppercase letters" << endl;
-    // Text from std input strea
-    char original[50];
-    cin.getline(original,50);
-    
-    // // print out the text
-    // cout << "the original text is:" << endl;
-    // for(int i = 0; i < 50; i++)
-    //   cout << original[i];
-    // cout << endl;
-
     // Encription
-    //    cout << "the ciphertext is:" << endl;
-    for(int i = 0; i < 50; i++)
-      if(original[i]!='\0')
-        cout << EnigmaMachine(original[i],pb,nullptr,argc-4,rf);    
+    for(int i = 0; i < TEXTLENG; i++)
+      if(text[i]>='A' && text[i]<='Z')
+        cout << EnigmaMachine(text[i],pb,nullptr,argc-4,rf);
+      else if(IsWhiteSpace(text[i]))
+        continue;
+      else
+      {
+        cerr << "INVALID INPUT CHARACTER" << endl;
+        return INVALID_INPUT_CHARACTER;
+      }
   }
   else // have one or more rotors
   {
@@ -44,35 +47,18 @@ int main(int argc, char**argv)
     for(int i = 0; i < argc-4; i++)
       rt[i] = new Rotor(argv[i+3],argv[argc-1]); // argv[argc-1] is the starting position file;
 
-
-    //cout << "Please input 26 uppercase letters" << endl;
-    // Text from std input strea
-    char original[50];
-    //char temp;
-    cin.getline(original,50);
-    // // print out the text
-    // cout << "the original text is:" << endl;
-    // for(int i = 0; i < 26; i++)
-    //   cout << original[i];
-    // cout << endl;
-
     // Encription
-    //    cout << "the ciphertext is:" << endl;
-    for(int i = 0; i < 26; i++)
-      if(original[i]!='\0')
-        cout << EnigmaMachine(original[i],pb,rt,argc-4,rf);
-    /*
-    // Reset the three rotors and use them as the enigma machine at the receiver side
-    rt1.SetPosToStartingPos(); rt2.SetPosToStartingPos(); rt3.SetPosToStartingPos();
-  
-    // Decription
-    cout << "the decripted text is: " << endl;
-    for(int i = 0; i < 26; i++)
-      if(original[i]!='\0')
-        cout << EnigmaMachine(original[i],pb,rt1,rt2,rt3,rf);
-    cout << endl;
-    */
-
+    for(int i = 0; i < TEXTLENG; i++)
+      if(text[i]>='A' && text[i]<='Z')
+        cout << EnigmaMachine(text[i],pb,rt,argc-4,rf);
+      else if(IsWhiteSpace(text[i]))
+        continue;
+      else
+      {
+        cerr << "INVALID INPUT CHARACTER";
+        return INVALID_INPUT_CHARACTER;
+      }
+    
     // delete the rts
     for(int i = 0; i < argc-4; i++)
       delete rt[i];
