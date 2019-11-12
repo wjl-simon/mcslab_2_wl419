@@ -127,7 +127,7 @@ int Rotor::LoadConfig(const char* rtConfigFilename)
       }
       else // cuurent is digit, next is invalid
       {
-        cerr << "NON_NUMERIC_CHARACTER in the rotor config!" << endl;
+        cerr << "Non-numeric character for mapping in rotor file rotor.rot" << endl;
         return NON_NUMERIC_CHARACTER;
       }
     }
@@ -135,7 +135,7 @@ int Rotor::LoadConfig(const char* rtConfigFilename)
       ipfile >> ws;
     else // current is invalid
     {
-      cerr << "NON_NUMERIC_CHARACTER in the rotor config!" << endl;
+      cerr << "Non-numeric character for mapping in rotor file rotor.rot" << endl;
       return NON_NUMERIC_CHARACTER;
     }
   }
@@ -144,7 +144,9 @@ int Rotor::LoadConfig(const char* rtConfigFilename)
 
   if(!IsLegalContact(mapping_temp, notch_temp))
   {
-    cerr << "INVALID_ROTOR_MAPPING in the rotor config!" << endl;
+    cerr << "Invalid mapping of input 13 to output 3"
+         <<"(output 3 is already mapped to from input 6) in"
+         << endl;
     return INVALID_ROTOR_MAPPING;
   }
 
