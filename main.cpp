@@ -16,14 +16,16 @@ int main(int argc, char**argv)
 
   // Text to be encripted
   string text; getline(cin,text); int const TEXTLENG = text.length();
+  cout << "the original one:" << endl << text << endl;
   
   // Enigma setting up
-  if(argc < 4)
+  int const ROTORNUM = argc - 4;
+  if(ROTORNUM < 0)
   {
     cerr << "usage: enigma plugboard-file reflector-file (<rotor-file>)* rotor-positions" << endl;
     return INSUFFICIENT_NUMBER_OF_PARAMETERS;
   }
-  else if(argc == 4)
+  else if(argc == 0)
   {
     // The plubboard and the relector
     Plugboard pb(argv[1]); Reflector rf(argv[2]);
@@ -31,7 +33,7 @@ int main(int argc, char**argv)
     // Encription
     for(int i = 0; i < TEXTLENG; i++)
       if(text[i]>='A' && text[i]<='Z')
-        cout << EnigmaMachine(text[i],pb,nullptr,argc-4,rf);
+        cout << EnigmaMachine(text[i],pb,nullptr,ROTORNUM,rf);
       else if(IsWhiteSpace(text[i]))
         continue;
       else
@@ -48,14 +50,18 @@ int main(int argc, char**argv)
     Plugboard pb(argv[1]); Reflector rf(argv[2]);
 
     // Rotors
-    Rotor* rt[argc-4];
-    for(int i = 0; i < argc-4; i++)
+    Rotor* rt[ROTORNUM];
+    for(int i = 0; i < ROTORNUM; i++)
+    {
       rt[i] = new Rotor(argv[i+3],argv[argc-1]); // argv[argc-1] is the starting position file;
+      rt[i]->SetPosToStartingPos();
+    }
 
     // Encription
+    cout << "encription:"<<endl;
     for(int i = 0; i < TEXTLENG; i++)
       if(text[i]>='A' && text[i]<='Z')
-        cout << EnigmaMachine(text[i],pb,rt,argc-4,rf);
+        cout << EnigmaMachine(text[i],pb,rt,ROTORNUM,rf);
       else if(IsWhiteSpace(text[i]))
         continue;
       else
@@ -63,9 +69,27 @@ int main(int argc, char**argv)
         cerr << "INVALID INPUT CHARACTER";
         return INVALID_INPUT_CHARACTER;
       }
+
+
+    // // decription
+    // cout << endl << "decription:"<<endl;
+    // for(int i = 0; i < ROTORNUM; i++)
+    //   rt[i]->SetPosToStartingPos();
+        
+    // for(int i = 0; i < TEXTLENG; i++)
+    //   if(text[i]>='A' && text[i]<='Z')
+    //     cout << EnigmaMachine(text[i],pb,rt,ROTORNUM,rf);
+    //   else if(IsWhiteSpace(text[i]))
+    //     continue;
+    //   else
+    //   {
+    //     cerr << "INVALID INPUT CHARACTER";
+    //     return INVALID_INPUT_CHARACTER;
+    //   }
+
     
     // delete the rts
-    for(int i = 0; i < argc-4; i++)
+    for(int i = 0; i < ROTORNUM; i++)
       delete rt[i];
   }
   
@@ -79,14 +103,19 @@ char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& r
 {
   // Plugboard Swapping
   pb.SwapLetters(ch);
+
   // Rotors mapping forward
+
   /*
-  bool flag1 = rt1.MapForwards(ch);
-  rt2.RotateDueToNotch(flag1); // rotate rt2 if a notch is at zero abs ref pos in rt1
-  bool flag2 = rt2.MapForwards(ch);
-  rt3.RotateDueToNotch(flag2); // rotate rt3 if a notch is at zero abs ref pos in rt3
-  rt3.MapForwards(ch);
+  bool flag = rt[0]->MapForwards(ch);
+  rt[1]->RotateDueToNotch(flag); // rotate rt2 if a notch is at zero abs ref pos in rt1
+  flag = rt[1]->MapForwards(ch);
+  rt[2]->RotateDueToNotch(flag); // rotate rt3 if a notch is at zero abs ref pos in rt3
+  rt[2]->MapForwards(ch);
   */
+
+
+  
   if(rt)
   {
     bool flag = false;
@@ -97,15 +126,19 @@ char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& r
           rt[i+1]->RotateDueToNotch(flag);
       }
   }
+  
   // Reflector
   rf.SwapLetters(ch);
+  
   // Rotors mapping backward
   if(rt)
   {
     for(int i = 0; i < rtNum; i++) 
       rt[i]->MapBackwards(ch);
   }
+
   // Plugboard again
   pb.SwapLetters(ch);
+  
   return ch;
 }
