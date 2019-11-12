@@ -194,7 +194,7 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
   for(int i = 0; i < currentRotorNum; i++) rtPos_temp[i] = -1;
   
   int i; // counter
-  for(i = 1; i <= currentRotorNum  && !ipfile.eof(); i++)
+  for(i = 0; i <= currentRotorNum  && !ipfile.eof(); i++)
   {
     ipfile.get(current); next = ipfile.peek();
 
@@ -215,8 +215,8 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
         }
         else
         {
-          cerr << "Non-numeric character in rotor positions file rotor.pos" << endl;
-          return NON_NUMERIC_CHARACTER;
+          cerr << "INVALID_INDEX (not between 0 adnd 25) in rotor positions file rotor.pos" << endl;
+          return INVALID_INDEX;
         }
       }
       else if(IsWhiteSpace(next)) // current is a digit, next is a ws: a one-digit number

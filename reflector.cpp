@@ -68,19 +68,19 @@ int Reflector::LoadConfig(const char* rfConfigFileName)
         if(current=='1' || (current=='2' && next>='0' && next<='5'))
         {
           // Test if there're more than 26 parameters in the rf config
-        if(i >= 26)
-        {
-          cerr << "Incorrect (odd) number of parameters in reflector file reflector.rf" << endl;
-          return INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS; 
-        }
+          if(i >= 26)
+            {
+              cerr << "Incorrect (odd) number of parameters in reflector file reflector.rf" << endl;
+              return INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS; 
+            }
           
           letters_temp[i] = Letter0Based2Char(current,next);
           ipfile.get(current); ipfile >> ws; // skip the "next" to get the one after 
         }
         else
         {
-          cerr << "Non-numeric character in reflector file reflector.rf" << endl;
-          return NON_NUMERIC_CHARACTER;
+          cerr << "INVALID_INDEX (not between 0 and 25) in reflector file reflector.rf" << endl;
+          return INVALID_INDEX;
         }
       }
       else if(IsWhiteSpace(next)) // current is digit, next is ws: a one-digit number
