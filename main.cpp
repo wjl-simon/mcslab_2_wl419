@@ -17,10 +17,7 @@ int main(int argc, char**argv)
   // Text to be encripted
   string text; getline(cin,text); int const TEXTLENG = text.length();
   
-  // The plubboard and the relector
-  Plugboard pb(argv[1]); Reflector rf(argv[2]);
-
-  // Rotor initilisation
+  // Enigma setting up
   if(argc < 4)
   {
     cerr << "usage: enigma plugboard-file reflector-file (<rotor-file>)* rotor-positions" << endl;
@@ -28,6 +25,9 @@ int main(int argc, char**argv)
   }
   else if(argc == 4)
   {
+    // The plubboard and the relector
+    Plugboard pb(argv[1]); Reflector rf(argv[2]);
+
     // Encription
     for(int i = 0; i < TEXTLENG; i++)
       if(text[i]>='A' && text[i]<='Z')
@@ -42,6 +42,9 @@ int main(int argc, char**argv)
   }
   else // have one or more rotors
   {
+    // The plubboard and the relector
+    Plugboard pb(argv[1]); Reflector rf(argv[2]);
+
     // Rotors
     Rotor* rt[argc-4];
     for(int i = 0; i < argc-4; i++)

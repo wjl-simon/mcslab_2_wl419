@@ -55,7 +55,8 @@ int Reflector::LoadConfig(const char* rfConfigFileName)
   char letters_temp[26]; // temporary copy for the letters array
 
   int i; // counter
-  for(i = 0; i < 26 && !ipfile.eof(); i++)
+  //for(i = 0; i < 26 && !ipfile.eof(); i++)
+  for(i = 0;!ipfile.eof(); i++)
   {
     ipfile.get(current); next = ipfile.peek();
 
@@ -66,23 +67,37 @@ int Reflector::LoadConfig(const char* rfConfigFileName)
         // Test if this two-digit number is between 10 and 25
         if(current=='1' || (current=='2' && next>='0' && next<='5'))
         {
+          // Test if there're more than 26 parameters in the rf config
+        if(i >= 26)
+        {
+          cerr << "Incorrect (odd) number of parameters in reflector file reflector.rf" << endl;
+          return INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS; 
+        }
+          
           letters_temp[i] = Letter0Based2Char(current,next);
           ipfile.get(current); ipfile >> ws; // skip the "next" to get the one after 
         }
         else
         {
-          cerr << "NON_NUMERIC_CHARACTER (not between 0 and 25) in the reflector config!" << endl;
+          cerr << "Non-numeric character in reflector file reflector.rf" << endl;
           return NON_NUMERIC_CHARACTER;
         }
       }
       else if(IsWhiteSpace(next)) // current is digit, next is ws: a one-digit number
       {
+        // Test if there're more than 26 parameters in the rf config
+        if(i >= 26)
+        {
+          cerr << "Incorrect (odd) number of parameters in reflector file reflector.rf" << endl;
+          return INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS; 
+        }
+        
         letters_temp[i] = Letter0Based2Char(current);
         ipfile.get(current);ipfile >> ws;
       }
       else // cuurent is a digit, next is invalid
       {
-        cerr << "NON_NUMERIC_CHARACTER in the reflector config!" << endl;
+        cerr << "Non-numeric character in reflector file reflector.rf" << endl;
         return NON_NUMERIC_CHARACTER;
       }
     }
@@ -90,17 +105,25 @@ int Reflector::LoadConfig(const char* rfConfigFileName)
       ipfile >> ws;
     else // current is invalid
     {
-      cerr << "NON_NUMERIC_CHARACTER in the reflector config!" << endl;
+      cerr << "Non-numeric character in reflector file reflector.rf" << endl;
       return NON_NUMERIC_CHARACTER;
     }
   }
 
-  //=== 3. Test if the number of numbers is 26 (13 pairs)
-  //letterNum = i; // if the program runs here then the numbers in the file shall be valid
+  //=== 3. Test if the number of numbers is (less than) 26 (13 pairs)
   if(i != 26)
   {
-    cerr << "Insufficient number of mappings in reflector file: reflector.rf" << endl;
-    return INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
+    if(i%2==0) // even
+    {
+      cerr << "Insufficient number of mappings in reflector file: reflector.rf" << endl;
+      return INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
+    }
+    else // odd
+    {
+      cerr << "Incorrect (odd) number of parameters in reflector file reflector.rf" << endl;
+      return INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
+    }
+    
   }
 
   //=== 4. Test if the file attemp to connect a contact to itself or more than one other

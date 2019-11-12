@@ -66,7 +66,7 @@ Rotor::Rotor(const char* rtConfigFilename, const char* rtStartingPosilename):
 
   // Load configs
   int e = this->LoadConfig(rtConfigFilename); if(e) exit(e);
-  e = LoadStartingPos(rtStartingPosilename); if(e) exit(e);
+  e = this->LoadStartingPos(rtStartingPosilename); if(e) exit(e);
 
   // Set starting position of the rotor
   this->SetPosToStartingPos();
@@ -139,14 +139,17 @@ int Rotor::LoadConfig(const char* rtConfigFilename)
       return NON_NUMERIC_CHARACTER;
     }
   }
-
+    
   //=== 3. Test if the file attemp to illegaly connect a contact and if it has notch positions
 
   if(!IsLegalContact(mapping_temp, notch_temp))
   {
-    cerr << "Invalid mapping of input 13 to output 3"
-         <<"(output 3 is already mapped to from input 6) in"
-         << endl;
+    if(i < 26)// less than 26 parameters
+      cerr << "Not all inputs mapped in rotor file: rotor.rot" << endl;
+    else // more than 26 parameters
+      cerr << "Invalid mapping of input 13 to output 3"
+           <<"(output 3 is already mapped to from input 6) in"
+           << endl;
     return INVALID_ROTOR_MAPPING;
   }
 
@@ -207,7 +210,7 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
         }
         else
         {
-          cerr << "NON_NUMERIC_CHARACTER in the rotor starting position!" << endl;
+          cerr << "Non-numeric character in rotor positions file rotor.pos" << endl;
           return NON_NUMERIC_CHARACTER;
         }
       }
@@ -222,7 +225,7 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
       }
       else // cuurent is digit, next is invalid
       {
-        cerr << "NON_NUMERIC_CHARACTER in the rotor starting position!" << endl;
+        cerr << "Non-numeric character in rotor positions file rotor.pos" << endl;
         return NON_NUMERIC_CHARACTER;
       }
     }
@@ -230,7 +233,7 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
       ipfile >> ws;
     else // current is invalid
     {
-      cerr << "NON_NUMERIC_CHARACTER in the rotor starting position!" << endl;
+      cerr << "Non-numeric character in rotor positions file rotor.pos" << endl;
       return NON_NUMERIC_CHARACTER;
     }
   }

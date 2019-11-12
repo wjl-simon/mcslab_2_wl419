@@ -57,7 +57,8 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
   char letters_temp[26]; // temporary copy for the letters array
 
   int i; // counter
-  for(i = 0; i < 26 && !ipfile.eof(); i++)
+  //for(i = 0; i < 26 && !ipfile.eof(); i++)
+  for(i = 0;!ipfile.eof(); i++)
   {
     ipfile.get(current); next = ipfile.peek();
 
@@ -65,6 +66,13 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
     {
       if(IsDigit(next)) // current and next are digits: a two-digit number
       {
+        // Test if there're more than 26 parameters in the pb config
+        if(i >=26)
+        {
+          cerr << "Incorrect number of parameters in plugboard file plugboard.pb" << endl;
+          return INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS;
+        }
+          
         // Test if this two-digit number is between 10 and 25
         if(current=='1' || (current=='2' && next>='0' && next<='5'))
         {
@@ -79,6 +87,13 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
       }
       else if(IsWhiteSpace(next)) // current is digit, next is ws: a one-digit number
       {
+        // Test if there're more than 26 parameters in the pb config
+        if(i >=26)
+        {
+          cerr << "Incorrect number of parameters in plugboard file plugboard.pb" << endl;
+          return INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS;
+        }
+        
         letters_temp[i] = Letter0Based2Char(current);
         ipfile.get(current); ipfile >> ws; 
       }
