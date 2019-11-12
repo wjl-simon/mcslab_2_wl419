@@ -23,18 +23,8 @@ int main(int argc, char**argv)
     //cout << "Please input 26 uppercase letters" << endl;
     // Text from std input strea
     char original[50];
-    char temp;
-    //  cin.getline(original,15) >> ws;
-    for(int i = 0; i < 50; i++)
-      {
-        cin >> ws >> temp;
-        if( temp >= 'A' && temp <='Z')
-          original[i] = temp;
-        else
-          continue;
-      }
-    cout << endl << endl;
-
+    cin.getline(original,50);
+    
     // // print out the text
     // cout << "the original text is:" << endl;
     // for(int i = 0; i < 50; i++)
@@ -45,9 +35,7 @@ int main(int argc, char**argv)
     //    cout << "the ciphertext is:" << endl;
     for(int i = 0; i < 50; i++)
       if(original[i]!='\0')
-        cout << EnigmaMachine(original[i],pb,nullptr,argc-4,rf);
-    cout << endl << endl;
-    
+        cout << EnigmaMachine(original[i],pb,nullptr,argc-4,rf);    
   }
   else // have one or more rotors
   {
@@ -60,18 +48,8 @@ int main(int argc, char**argv)
     //cout << "Please input 26 uppercase letters" << endl;
     // Text from std input strea
     char original[50];
-    char temp;
-    //  cin.getline(original,15) >> ws;
-    for(int i = 0; i < 26; i++)
-      {
-        cin >> ws >> temp;
-        if( temp >= 'A' && temp <='Z')
-          original[i] = temp;
-        else
-          continue;
-      }
-    cout << endl << endl;
-
+    //char temp;
+    cin.getline(original,50);
     // // print out the text
     // cout << "the original text is:" << endl;
     // for(int i = 0; i < 26; i++)
@@ -83,8 +61,6 @@ int main(int argc, char**argv)
     for(int i = 0; i < 26; i++)
       if(original[i]!='\0')
         cout << EnigmaMachine(original[i],pb,rt,argc-4,rf);
-    cout << endl << endl;
-
     /*
     // Reset the three rotors and use them as the enigma machine at the receiver side
     rt1.SetPosToStartingPos(); rt2.SetPosToStartingPos(); rt3.SetPosToStartingPos();
@@ -107,6 +83,7 @@ int main(int argc, char**argv)
 
 
 
+
 char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& rf)
 {
   // Plugboard Swapping
@@ -119,7 +96,7 @@ char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& r
   rt3.RotateDueToNotch(flag2); // rotate rt3 if a notch is at zero abs ref pos in rt3
   rt3.MapForwards(ch);
   */
-  if(!rt)
+  if(rt)
   {
     bool flag = false;
     for(int i = 0; i < rtNum; i++)
@@ -132,7 +109,7 @@ char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& r
   // Reflector
   rf.SwapLetters(ch);
   // Rotors mapping backward
-  if(!rt)
+  if(rt)
   {
     for(int i = 0; i < rtNum; i++) 
       rt[i]->MapBackwards(ch);
