@@ -52,7 +52,7 @@ Rotor::Rotor(): isConfigLoaded(false),isStartingPosLoaded(false),startingPos(-1)
 {
   for(int i = 0; i < 26; i++){ letterAtAbsPos[i] = i; mapAbs2Abs[i] = -1; notch[i] = -1; }
   currentRotorNum++; // increment by 1 for each new rotor instance
-  rotorLabel = currentRotorNum;
+  rotorLabel = currentRotorNum - 1; // the rotorLabel starts from 0
   //  cout << "This is rotor " << rotorLabel << endl;
 }
 
@@ -62,7 +62,7 @@ Rotor::Rotor(const char* rtConfigFilename, const char* rtStartingPosilename):
 {
   for(int i = 0; i < 26; i++){ letterAtAbsPos[i] = i; mapAbs2Abs[i] = -1; notch[i] = -1; }
   currentRotorNum++; // increment by 1 for each new rotor instance
-  rotorLabel = currentRotorNum;
+  rotorLabel = currentRotorNum - 1; // the rotorLabel starts from 0
 
   // Load configs
   int e = this->LoadConfig(rtConfigFilename); if(e) exit(e);
@@ -190,6 +190,9 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
   char current, next; // current and next char read from the file
   ipfile >> ws; // filestream starts from first non-ws char
 
+  int rtPos_temp[currentRotorNum-1];
+  for(int i = 0; i < currentRotorNum; i++) rtPos_temp[i] = -1;
+  
   int i; // counter
   for(i = 1; i <= currentRotorNum  && !ipfile.eof(); i++)
   {
@@ -202,10 +205,12 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
         // Test if this two-digit number is between 10 and 25
         if(current=='1' || (current=='2' && next>='0' && next<='5'))
         {
-          if(i == rotorLabel)
-          {
-            startingPos = 10 * DigitChar2Int(current) + DigitChar2Int(next); break;
-          }
+          // if(i == rotorLabel)
+          // {
+          //   startingPos = 10 * DigitChar2Int(current) + DigitChar2Int(next); break;
+          //}
+          rtPos_temp[i] = 10 * DigitChar2Int(current) + DigitChar2Int(next);
+          
           ipfile.get(current); ipfile >> ws; // skip the "next" to get the one after
         }
         else
@@ -216,10 +221,11 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
       }
       else if(IsWhiteSpace(next)) // current is a digit, next is a ws: a one-digit number
       {
-        if(i == rotorLabel)
-        {
-          startingPos = DigitChar2Int(current); break;
-        }
+        // if(i == rotorLabel)
+        // {
+        //   startingPos = DigitChar2Int(current); break;
+        // }
+        rtPos_temp[i] = DigitChar2Int(current);
         
         ipfile.get(current); ipfile >> ws;
       }
@@ -238,15 +244,15 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
     }
   }
 
-  //  cout << "statring position is " << startingPos << endl;
-
   //=== 3. Check if there is a starting position  
-  if(i != rotorLabel)
+  if(rtPos_temp[rotorLabel] == -1)
   {
-    cerr << "NO_ROTOR_STARTING_POSITION" << endl;
+    cerr << "No starting position for rotor " << rotorLabel
+         << " in rotor position file: rotor.pos" << endl;
     return NO_ROTOR_STARTING_POSITION;
   }
-  
+  else startingPos = rtPos_temp[rotorLabel];
+         
   //=== 4. Everything's Done
   ipfile.close(); isStartingPosLoaded = true;
   return NO_ERROR;
@@ -281,7 +287,7 @@ bool Rotor::MapForwards(char& ch)
   if(isConfigLoaded)   
   {
     // When a key is pressed a rotation happens at the rightmost rotor before closing the circuit
-    if(rotorLabel == 1)
+    if(rotorLabel == 0)
       Rotate();
     
     // Cicuit close, perform the mapping
