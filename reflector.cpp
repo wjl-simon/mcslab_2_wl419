@@ -99,8 +99,7 @@ int Reflector::LoadConfig(const char* rfConfigFileName)
   //letterNum = i; // if the program runs here then the numbers in the file shall be valid
   if(i != 26)
   {
-    cerr << "INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS (26 number of numbers) "
-         << "in the reflector config!" << endl;
+    cerr << "Insufficient number of mappings in reflector file: reflector.rf" << endl;
     return INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
   }
 

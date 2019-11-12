@@ -101,9 +101,8 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
   letterNum = i; // if the program runs here then the numbers in the file shall be valid
   if(letterNum % 2 != 0)
   {
-    cerr << "INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS (odd number of numbers) "
-         << "in the plugboard config!" << endl;
-    return INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
+    cerr << "Incorrect number of parameters in plugboard file plugboard.pb" << endl;
+    return INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS;
   }
 
   //=== 4. Test if the file attemp to connect a contact to itself or more than one other
