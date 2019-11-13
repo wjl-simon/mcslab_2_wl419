@@ -135,11 +135,11 @@ int Reflector::LoadConfig(const char* rfConfigFileName)
   //=== 5. Everything's Done
   ipfile.close(); isLoaded = true;
   // cout << "reflector mapping:" << endl;
-  // for(int i = 0; i < 26; i++)
-  //   {
-  //     letters[i] = letters_temp[i]; // write on the letters arrray
-  //     cout << letters[i];
-  // }
+  for(int i = 0; i < 26; i++)
+    {
+      letters[i] = letters_temp[i]; // write on the letters arrray
+      // cout << letters[i];
+  }
   // cout << endl;
   return NO_ERROR;
 }
@@ -154,13 +154,13 @@ void Reflector::SwapLetters(char& letter)
       if(letter == letters[i])
       {
         letter = letters[i+1];
-        // cout << "reflector maps into " << letter << endl;
+        //cout << "reflector maps into " << letter << endl;
         return;
       }
       else if(letter == letters[i+1])
       {
         letter = letters[i];
-        //cout << "reflector maps into " << letter << endl;
+        //        cout << "reflector maps into " << letter << endl;
         return;
       }
   }

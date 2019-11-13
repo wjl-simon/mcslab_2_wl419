@@ -68,8 +68,8 @@ int main(int argc, char**argv)
         cerr << "INVALID INPUT CHARACTER";
         return INVALID_INPUT_CHARACTER;
       }
-
-    /*    
+    /*
+    
     // decription
     cout << endl << "decription:"<<endl;
     for(int i = 0; i < ROTORNUM; i++)
@@ -115,17 +115,29 @@ char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& r
   {
     // When a key is pressed a rotation happens at the rightmost rotor before closing the circuit
     rt[0]->Rotate();
+    bool flag = false;
+    for(int i = 0; i < rtNum; i++)
+    {
+      flag = rt[i]->IsNotchAtTop();
+      if(!flag) break;
+      if(i != rtNum-1)
+        rt[i+1]->RotateDueToNotch(flag);
+    }
 
     // Plugboard Swapping
     pb.SwapLetters(ch);
 
     // Rotor Mapping
-    bool flag = false;
     for(int i = 0; i < rtNum; i++)
       {
-        flag = rt[i]->MapForwards(ch);
-        if(i != rtNum-1) // the (rtNum-1)-th rotor won't have the next one rotated 
-          rt[i+1]->RotateDueToNotch(flag);
+        rt[i]->MapForwards(ch); // mapping forward
+        // for(int j = i; j < rtNum; j++) // check if the subsequent rotors need rotations
+        //   {
+        //     flag = rt[j]->IsNotchAtTop();
+        //     if(!flag) break;
+        //     else if(j != rtNum-1)
+        //       rt[j+1]->RotateDueToNotch(flag);
+        //   }
       }
 
     // Reflector

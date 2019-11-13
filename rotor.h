@@ -27,7 +27,7 @@ class Rotor
   /* Set the Rotor's position to the designated starting position */
   void SetPosToStartingPos();
   /* Functionality 1.1: Map the letters forwards */
-  bool MapForwards(char& ch);
+  void MapForwards(char& ch);
   /* Functionality 1.2: Map the letters backwards */
   void MapBackwards(char& ch);
   /*Functionality 2: Rotate the rotor */
@@ -35,6 +35,8 @@ class Rotor
   /* Rotate due to the rotor to its right whose absolute position hit a notch 
      Flag is the returned value of the DoMapping() member of the rotor to its right */
   void RotateDueToNotch(bool flag);
+  /* Check if there is a notch at the top absolute reference posiion*/
+  bool IsNotchAtTop();
   /* Destructor */
   ~Rotor();
 };

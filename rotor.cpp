@@ -155,11 +155,11 @@ int Rotor::LoadConfig(const char* rtConfigFilename)
 
   //=== 4. Everything's Done
   ipfile.close(); isConfigLoaded = true;
-  // for(int i = 0; i < 26; i++)
-  // {
-  //   mapAbs2Abs[i] = mapping_temp[i];
-  //   notch[i] = notch_temp[i]; 
-  // }
+  for(int i = 0; i < 26; i++)
+  {
+    mapAbs2Abs[i] = mapping_temp[i];
+    notch[i] = notch_temp[i]; 
+  }
   // cout << "rotor " << rotorLabel << " after config its Abs2Abs mapping:" << endl;
   // for(int i = 0; i<26; i++)
   //   {
@@ -274,7 +274,7 @@ void Rotor::SetPosToStartingPos()
 
 /* Functionality 1.1: Map the letters forwards: return if the rotor to its next should also rotate 
 */
-bool Rotor::MapForwards(char& ch)
+void Rotor::MapForwards(char& ch)
 {
   int ch0Based = ch - 65; // convert the lettter ch into 0-based from int
   if(isConfigLoaded)   
@@ -296,17 +296,9 @@ bool Rotor::MapForwards(char& ch)
     // cout << "Rotor " << rotorLabel << " maps forwards into " << ch << endl; 
     
     // Check if there is a notch at the top absolute reference position
-    for(int i = 0; notch[i]!=-1 && i < 26; i++)
-      if(notch[i] >= 0 && notch[i] <= 25)
-        if(notch[i] == letterAtAbsPos[0])
-          {
-            //cout << "rotor " << rotorLabel+1 << " need to rotate due to notch!" << endl;
-            return true; // telling the rotor to the left that it should also rotate  
-          }
-
-    return false;
+    //return IsNotchAtTop();
   }
-  else return false ;
+  else return;
 }
 
 
@@ -348,6 +340,21 @@ void Rotor::RotateDueToNotch(bool flag)
   else return;
 }
 
+
+/* Check if there is a notch at the top absolute reference posiion*/
+bool Rotor::IsNotchAtTop()
+{
+  // Check if there is a notch at the top absolute reference position
+  for(int i = 0; notch[i]!=-1 && i < 26; i++)
+    if(notch[i] >= 0 && notch[i] <= 25)
+      if(notch[i] == letterAtAbsPos[0])
+        {
+          //cout << "rotor " << rotorLabel+1 << " need to rotate due to notch!" << endl;
+          return true; // telling the rotor to the left that it should also rotate  
+        }
+
+  return false;
+}
 
 /* Destructor */
 Rotor::~Rotor(){ currentRotorNum--; }
