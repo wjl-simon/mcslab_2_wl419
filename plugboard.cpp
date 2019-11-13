@@ -132,13 +132,8 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
     
   //=== 5. Everything's Done
   ipfile.close(); isLoaded = true;
-   cout << "plugboard conf" << endl;
   for(int i = 0; i < 26; i++)
-  {
-    letters[i] = letters_temp[i]; 
-     cout << letters[i];
-  }
-   cout << endl;
+    letters[i] = letters_temp[i];
   return NO_ERROR;
 }
 
@@ -152,19 +147,14 @@ void Plugboard::SwapLetters(char& letter)
       if(letter == letters[i])
       {
         letter = letters[i+1];
-        
-        //cout << "plugboard maps into " << letter << endl;
         return;
       }
       else if(letter == letters[i+1])
       {
         letter = letters[i];
-        
-        //  cout << "plugboard maps into " << letter << endl;
         return;
       }
     // Runs here means there's no mapping for this letter: maps to itself
-    //    cout << "plugboard maps into " << letter << endl;
   }
   else return; // do nothing if loading failed
 }
