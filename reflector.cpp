@@ -134,13 +134,13 @@ int Reflector::LoadConfig(const char* rfConfigFileName)
     
   //=== 5. Everything's Done
   ipfile.close(); isLoaded = true;
-  // cout << "reflector mapping:" << endl;
+   cout << "reflector mapping:" << endl;
   for(int i = 0; i < 26; i++)
     {
       letters[i] = letters_temp[i]; // write on the letters arrray
-      // cout << letters[i];
+       cout << letters[i];
   }
-  // cout << endl;
+   cout << endl;
   return NO_ERROR;
 }
 

@@ -17,7 +17,7 @@ int main(int argc, char**argv)
 
   // Text to be encripted
   string text; getline(cin,text); int const TEXTLENG = text.length();
-  cout << "the original one:" << endl << text << endl;
+  //  cout << "the original one:" << endl << text << endl;
   
   // Enigma setting up
   int const ROTORNUM = argc - 4;
@@ -72,7 +72,7 @@ int main(int argc, char**argv)
       }
 
    
-    /*
+    /*    
     // decription
     cout << endl << "decription:"<<endl;
     for(int i = 0; i < ROTORNUM; i++)
@@ -103,21 +103,12 @@ int main(int argc, char**argv)
 
 char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& rf)
 {
-  
-
-  // Rotors mapping forward
-
-  /*
-  bool flag = rt[0]->MapForwards(ch);
-  rt[1]->RotateDueToNotch(flag); // rotate rt2 if a notch is at zero abs ref pos in rt1
-  flag = rt[1]->MapForwards(ch);
-  rt[2]->RotateDueToNotch(flag); // rotate rt3 if a notch is at zero abs ref pos in rt3
-  rt[2]->MapForwards(ch);
-  */  
   if(rt)
   {
     // When a key is pressed a rotation happens at the rightmost rotor before closing the circuit
     rt[0]->Rotate();
+
+    // Rotor engagement
     bool flag = false;
     for(int i = 0; i < rtNum; i++)
     {
@@ -127,11 +118,11 @@ char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& r
         rt[i+1]->RotateDueToNotch(flag);
     }
 
-    //=======Circuit Close now!=========
+    //===Circuit Close now!===
     // Plugboard Swapping
     pb.SwapLetters(ch);
 
-    // Rotor Mapping
+    // Rotor Mapping forwards
     for(int i = 0; i < rtNum; i++) rt[i]->MapForwards(ch);
 
     // Reflector
@@ -142,17 +133,11 @@ char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& r
 
     // Plugboard again
     pb.SwapLetters(ch);
-    
   }
   else
   {
-    // Plugboard Swapping
-    pb.SwapLetters(ch);
-    // Reflector
-    rf.SwapLetters(ch);
-    // Plugboard again
-    pb.SwapLetters(ch);
-    
+    // Plugboard Swapping, Reflector, Plugboard again 
+    pb.SwapLetters(ch); rf.SwapLetters(ch); pb.SwapLetters(ch);
   }
   
   return ch;

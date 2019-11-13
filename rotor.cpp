@@ -164,17 +164,17 @@ int Rotor::LoadConfig(const char* rtConfigFilename)
     mapAbs2Abs[i] = mapping_temp[i];
     notch[i] = notch_temp[i]; 
   }
-  // cout << "rotor " << rotorLabel << " after config its Abs2Abs mapping:" << endl;
-  // for(int i = 0; i<26; i++)
-  //   {
-  //     cout << mapAbs2Abs[i] << ' ';
-  //   }
-  // cout << endl << " And its notches are:" <<endl;
-  // for(int i = 0; i<26; i++)
-  //   {
-  //     cout << notch[i] << ' ';
-  //   }
-  // cout << endl << endl;
+  cout << "rotor " << rotorLabel << " after config its Abs2Abs mapping:" << endl;
+  for(int i = 0; i<26; i++)
+    {
+      cout << mapAbs2Abs[i] << ' ';
+    }
+  cout << endl << " And its notches are:" <<endl;
+  for(int i = 0; i<26; i++)
+    {
+      cout << notch[i] << ' ';
+    }
+  cout << endl << endl;
   return NO_ERROR;
 }
 
@@ -251,6 +251,9 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
     startingPos = rtPos_temp[rotorLabel];    
   //=== 4. Everything's Done
   ipfile.close(); isStartingPosLoaded = true;
+
+  cout << "rotor " << rotorLabel << " has starting Pos at " << startingPos << endl;
+  
   return NO_ERROR;
 }
 
@@ -332,10 +335,11 @@ void Rotor::MapBackwards(char& ch)
    Flag is the returned value of the DoMapping() member of the rotor to its right */
 void Rotor::RotateDueToNotch(bool flag)
 {
-  /*
+  
   if(flag) Rotate();
   else return;
-  */
+  
+  /*
   if(flag)
   {
     int temp = 0;
@@ -349,6 +353,7 @@ void Rotor::RotateDueToNotch(bool flag)
     }
   }
   else return;
+  */
 }
 
 
