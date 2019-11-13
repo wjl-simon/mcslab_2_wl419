@@ -56,6 +56,8 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
   ipfile >> ws; // filestream starts from first non-ws char
   char letters_temp[26]; // temporary copy for the letters array
 
+  for(int i = 0; i < 26; i++) letters_temp[i] = '?';
+
   int i; // counter
   //for(i = 0; i < 26 && !ipfile.eof(); i++)
   for(i = 0;!ipfile.eof(); i++)
