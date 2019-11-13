@@ -113,7 +113,7 @@ int Reflector::LoadConfig(const char* rfConfigFileName)
   //=== 3. Test if the number of numbers is (less than) 26 (13 pairs)
   if(i != 26)
   {
-    if(i%2==0) // even
+    if(i%2 == 0) // even
     {
       cerr << "Insufficient number of mappings in reflector file: reflector.rf" << endl;
       return INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
@@ -122,8 +122,7 @@ int Reflector::LoadConfig(const char* rfConfigFileName)
     {
       cerr << "Incorrect (odd) number of parameters in reflector file reflector.rf" << endl;
       return INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
-    }
-    
+    }    
   }
 
   //=== 4. Test if the file attemp to connect a contact to itself or more than one other
@@ -136,9 +135,12 @@ int Reflector::LoadConfig(const char* rfConfigFileName)
   //=== 5. Everything's Done
   ipfile.close(); isLoaded = true;
   // cout << "reflector mapping:" << endl;
-  for(int i = 0; i < 26; i++)
-    letters[i] = letters_temp[i]; // write on the letters arrray
-  //cout << endl;
+  // for(int i = 0; i < 26; i++)
+  //   {
+  //     letters[i] = letters_temp[i]; // write on the letters arrray
+  //     cout << letters[i];
+  // }
+  // cout << endl;
   return NO_ERROR;
 }
 
@@ -152,14 +154,15 @@ void Reflector::SwapLetters(char& letter)
       if(letter == letters[i])
       {
         letter = letters[i+1];
+        // cout << "reflector maps into " << letter << endl;
         return;
       }
       else if(letter == letters[i+1])
       {
         letter = letters[i];
+        //cout << "reflector maps into " << letter << endl;
         return;
       }
-    // Runs here means there's no mapping for this letter: maps to itself
   }
   else return; // do nothing if loading failed
 }

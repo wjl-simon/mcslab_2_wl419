@@ -15,8 +15,6 @@ class Rotor
   
   /* Return false if the file connects a contact with itself or with more than one other  */
   bool IsLegalContact(int mapping[], int notch[]);
-  /*Functionality 2: Rotate the rotor */
-  void Rotate();
   
  public:
   /* Constructors*/
@@ -32,6 +30,8 @@ class Rotor
   bool MapForwards(char& ch);
   /* Functionality 1.2: Map the letters backwards */
   void MapBackwards(char& ch);
+  /*Functionality 2: Rotate the rotor */
+  void Rotate();
   /* Rotate due to the rotor to its right whose absolute position hit a notch 
      Flag is the returned value of the DoMapping() member of the rotor to its right */
   void RotateDueToNotch(bool flag);

@@ -67,7 +67,7 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
       if(IsDigit(next)) // current and next are digits: a two-digit number
       {
         // Test if there're more than 26 parameters in the pb config
-        if(i >=26)
+        if(i >= 26)
         {
           cerr << "Incorrect number of parameters in plugboard file plugboard.pb" << endl;
           return INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS;
@@ -88,7 +88,7 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
       else if(IsWhiteSpace(next)) // current is digit, next is ws: a one-digit number
       {
         // Test if there're more than 26 parameters in the pb config
-        if(i >=26)
+        if(i >= 26)
         {
           cerr << "Incorrect number of parameters in plugboard file plugboard.pb" << endl;
           return INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS;
@@ -114,6 +114,7 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
   
   //=== 3. Test if the number of numbers is not even
   letterNum = i; // if the program runs here then the numbers in the file shall be valid
+  //  cout << "letter number is " << letterNum << endl;
   if(letterNum % 2 != 0)
   {
     cerr << "Incorrect number of parameters in plugboard file plugboard.pb" << endl;
@@ -129,8 +130,13 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
     
   //=== 5. Everything's Done
   ipfile.close(); isLoaded = true;
-  for(int i = 0; i < 26; i++)
-    letters[i] = letters_temp[i]; 
+  // cout << "plugboard conf" << endl;
+  // for(int i = 0; i < 26; i++)
+  // {
+  //   letters[i] = letters_temp[i]; 
+  //   cout << letters[i];
+  // }
+  // cout << endl;
   return NO_ERROR;
 }
 
@@ -144,14 +150,19 @@ void Plugboard::SwapLetters(char& letter)
       if(letter == letters[i])
       {
         letter = letters[i+1];
+        
+        // cout << "plugboard maps into " << letter << endl;
         return;
       }
       else if(letter == letters[i+1])
       {
         letter = letters[i];
+        
+        //cout << "plugboard maps into " << letter << endl;
         return;
       }
     // Runs here means there's no mapping for this letter: maps to itself
+    //cout << "plugboard maps into " << letter << endl;
   }
   else return; // do nothing if loading failed
 }

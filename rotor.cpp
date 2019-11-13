@@ -40,7 +40,7 @@ void Rotor::Rotate()
     if(i > 0) letterAtAbsPos[i] = letterAtAbsPos[i-1];
     else letterAtAbsPos[i] = temp;
   }
-  // cout << "rotor " << rotorLabel << " rotates! Now the pos is:" << endl;
+  //  cout << "rotor " << rotorLabel << " rotates! Now the pos is:" << endl;
   // for(int i =0; i<26;i++)
   //   cout << letterAtAbsPos[i] << ' ';
   // cout << endl;
@@ -144,9 +144,9 @@ int Rotor::LoadConfig(const char* rtConfigFilename)
 
   if(!IsLegalContact(mapping_temp, notch_temp))
   {
-    if(i < 26)// less than 26 parameters
+    if(i < 26)// less than 26 parameters in the config
       cerr << "Not all inputs mapped in rotor file: rotor.rot" << endl;
-    else // more than 26 parameters
+    else // has exactly or more than 26 parameters
       cerr << "Invalid mapping of input 13 to output 3"
            <<"(output 3 is already mapped to from input 6) in"
            << endl;
@@ -155,11 +155,11 @@ int Rotor::LoadConfig(const char* rtConfigFilename)
 
   //=== 4. Everything's Done
   ipfile.close(); isConfigLoaded = true;
-  for(int i = 0; i < 26; i++)
-  {
-    mapAbs2Abs[i] = mapping_temp[i];
-    notch[i] = notch_temp[i]; 
-  }
+  // for(int i = 0; i < 26; i++)
+  // {
+  //   mapAbs2Abs[i] = mapping_temp[i];
+  //   notch[i] = notch_temp[i]; 
+  // }
   // cout << "rotor " << rotorLabel << " after config its Abs2Abs mapping:" << endl;
   // for(int i = 0; i<26; i++)
   //   {
@@ -194,7 +194,7 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
   for(int i = 0; i < currentRotorNum; i++) rtPos_temp[i] = -1;
   
   int i; // counter
-  for(i = 0; i <= currentRotorNum  && !ipfile.eof(); i++)
+  for(i = 0; i < currentRotorNum  && !ipfile.eof(); i++)
   {
     ipfile.get(current); next = ipfile.peek();
 
@@ -263,18 +263,11 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
 void Rotor::SetPosToStartingPos()
 {
   if(isStartingPosLoaded) // only allow to set if the staring position is given
-    for(int i = 0; i < 25; i++)
-      if(letterAtAbsPos[0]!=startingPos){
-        //cout << "setting!" << endl;
-        Rotate();}
-      else
-        {
-          //cout << "after rotation the cuurent pos is:" << endl;
-          //for(int j = 0; j < 26; j++) cout << letterAtAbsPos[j] << ' ';
-          //cout << endl;
-          return;
-        }
-        
+    while(letterAtAbsPos[0] != startingPos)
+    {
+        // cout << "setting!" << endl;
+        Rotate(); 
+    }
   else return;
 }
 
@@ -287,8 +280,7 @@ bool Rotor::MapForwards(char& ch)
   if(isConfigLoaded)   
   {
     // When a key is pressed a rotation happens at the rightmost rotor before closing the circuit
-    if(rotorLabel == 0)
-      Rotate();
+    // if(rotorLabel == 0) Rotate();
     
     // Cicuit close, perform the mapping
     int preimageAbsPos = 0; // abs pos of the source letter mapping from
@@ -301,13 +293,16 @@ bool Rotor::MapForwards(char& ch)
     int imageAbsPos = mapAbs2Abs[preimageAbsPos]; // abs pos of the destination letter
     ch = Letter0BasedInt2Char(letterAtAbsPos[imageAbsPos]);
 
-    //cout << "Rotor " << rotorLabel << " maps forwards into " << ch << endl; 
+    // cout << "Rotor " << rotorLabel << " maps forwards into " << ch << endl; 
     
     // Check if there is a notch at the top absolute reference position
     for(int i = 0; notch[i]!=-1 && i < 26; i++)
       if(notch[i] >= 0 && notch[i] <= 25)
         if(notch[i] == letterAtAbsPos[0])
-          return true; // telling the rotor to the left that it should also rotate
+          {
+            //cout << "rotor " << rotorLabel+1 << " need to rotate due to notch!" << endl;
+            return true; // telling the rotor to the left that it should also rotate  
+          }
 
     return false;
   }
@@ -338,7 +333,7 @@ void Rotor::MapBackwards(char& ch)
         break;
       }
 
-    ch = Letter0BasedInt2Char(letterAtAbsPos[preimageAbsPos]);
+    ch = Letter0BasedInt2Char(letterAtAbsPos[preimageAbsPos]);  
     //cout << "Rotor " << rotorLabel << " maps backwards into " << ch << endl;
   }
   else return;

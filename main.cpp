@@ -4,6 +4,7 @@
 #include "rotor.h"
 #include "reflector.h"
 #include "helper.h"
+#include <string>
 
 
 using namespace std;
@@ -16,7 +17,7 @@ int main(int argc, char**argv)
 
   // Text to be encripted
   string text; getline(cin,text); int const TEXTLENG = text.length();
-  cout << "the original one:" << endl << text << endl;
+  //cout << "the original one:" << endl << text << endl;
   
   // Enigma setting up
   int const ROTORNUM = argc - 4;
@@ -52,13 +53,11 @@ int main(int argc, char**argv)
     // Rotors
     Rotor* rt[ROTORNUM];
     for(int i = 0; i < ROTORNUM; i++)
-    {
       rt[i] = new Rotor(argv[i+3],argv[argc-1]); // argv[argc-1] is the starting position file;
-      rt[i]->SetPosToStartingPos();
-    }
+
 
     // Encription
-    cout << "encription:"<<endl;
+    //cout << "encription:"<<endl;
     for(int i = 0; i < TEXTLENG; i++)
       if(text[i]>='A' && text[i]<='Z')
         cout << EnigmaMachine(text[i],pb,rt,ROTORNUM,rf);
@@ -70,23 +69,23 @@ int main(int argc, char**argv)
         return INVALID_INPUT_CHARACTER;
       }
 
-
-    // // decription
-    // cout << endl << "decription:"<<endl;
-    // for(int i = 0; i < ROTORNUM; i++)
-    //   rt[i]->SetPosToStartingPos();
+    /*    
+    // decription
+    cout << endl << "decription:"<<endl;
+    for(int i = 0; i < ROTORNUM; i++)
+      rt[i]->SetPosToStartingPos();
         
-    // for(int i = 0; i < TEXTLENG; i++)
-    //   if(text[i]>='A' && text[i]<='Z')
-    //     cout << EnigmaMachine(text[i],pb,rt,ROTORNUM,rf);
-    //   else if(IsWhiteSpace(text[i]))
-    //     continue;
-    //   else
-    //   {
-    //     cerr << "INVALID INPUT CHARACTER";
-    //     return INVALID_INPUT_CHARACTER;
-    //   }
-
+    for(int i = 0; i < TEXTLENG; i++)
+      if(text[i]>='A' && text[i]<='Z')
+        cout << EnigmaMachine(text[i],pb,rt,ROTORNUM,rf);
+      else if(IsWhiteSpace(text[i]))
+        continue;
+      else
+      {
+        cerr << "INVALID INPUT CHARACTER";
+        return INVALID_INPUT_CHARACTER;
+      }
+    */
     
     // delete the rts
     for(int i = 0; i < ROTORNUM; i++)
@@ -101,8 +100,7 @@ int main(int argc, char**argv)
 
 char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& rf)
 {
-  // Plugboard Swapping
-  pb.SwapLetters(ch);
+  
 
   // Rotors mapping forward
 
@@ -112,12 +110,16 @@ char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& r
   flag = rt[1]->MapForwards(ch);
   rt[2]->RotateDueToNotch(flag); // rotate rt3 if a notch is at zero abs ref pos in rt3
   rt[2]->MapForwards(ch);
-  */
-
-
-  
+  */  
   if(rt)
   {
+    // When a key is pressed a rotation happens at the rightmost rotor before closing the circuit
+    rt[0]->Rotate();
+
+    // Plugboard Swapping
+    pb.SwapLetters(ch);
+
+    // Rotor Mapping
     bool flag = false;
     for(int i = 0; i < rtNum; i++)
       {
@@ -125,20 +127,28 @@ char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& r
         if(i != rtNum-1) // the (rtNum-1)-th rotor won't have the next one rotated 
           rt[i+1]->RotateDueToNotch(flag);
       }
-  }
-  
-  // Reflector
-  rf.SwapLetters(ch);
-  
-  // Rotors mapping backward
-  if(rt)
-  {
-    for(int i = 0; i < rtNum; i++) 
-      rt[i]->MapBackwards(ch);
-  }
 
-  // Plugboard again
-  pb.SwapLetters(ch);
+    // Reflector
+    rf.SwapLetters(ch);
+
+    // Rotor maping backwards
+    for(int i = rtNum-1; i >= 0; i--) 
+      rt[i]->MapBackwards(ch);
+
+    // Plugboard again
+    pb.SwapLetters(ch);
+    
+  }
+  else
+  {
+    // Plugboard Swapping
+    pb.SwapLetters(ch);
+    // Reflector
+    rf.SwapLetters(ch);
+    // Plugboard again
+    pb.SwapLetters(ch);
+    
+  }
   
   return ch;
 }
