@@ -34,7 +34,7 @@ bool Rotor::IsLegalContact(int mapping[], int notch[])
 }
 
 
-/* Functionality 2: Rotate the rotor */
+/* Functionality 2: Rotate the rightmost rotor */
 void Rotor::Rotate()
 {
   int temp = 0;
@@ -198,7 +198,7 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
   for(int i = 0; i < currentRotorNum; i++) rtPos_temp[i] = -1;
   
   int i; // counter
-  for(i = 0; i < currentRotorNum  && !ipfile.eof(); i++)
+  for(i = 0; !ipfile.eof(); i++)
   {
     ipfile.get(current); next = ipfile.peek();
 
@@ -209,10 +209,6 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
         // Test if this two-digit number is between 10 and 25
         if(current=='1' || (current=='2' && next>='0' && next<='5'))
         {
-          // if(i == rotorLabel)
-          // {
-          //   startingPos = 10 * DigitChar2Int(current) + DigitChar2Int(next); break;
-          //}
           rtPos_temp[i] = 10 * DigitChar2Int(current) + DigitChar2Int(next);
           
           ipfile.get(current); ipfile >> ws; // skip the "next" to get the one after
