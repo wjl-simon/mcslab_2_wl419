@@ -340,7 +340,22 @@ void Rotor::MapBackwards(char& ch)
    Flag is the returned value of the DoMapping() member of the rotor to its right */
 void Rotor::RotateDueToNotch(bool flag)
 {
+  /*
   if(flag) Rotate();
+  else return;
+  */
+  if(flag)
+  {
+    int temp = 0;
+    for(int i = 0; i < 26; i++)
+    {
+      if(i == 0)
+        temp = letterAtAbsPos[i];
+    
+      if(i < 25) letterAtAbsPos[i] = letterAtAbsPos[i+1];
+      else letterAtAbsPos[i] = temp;
+    }
+  }
   else return;
 }
 
