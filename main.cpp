@@ -17,7 +17,7 @@ int main(int argc, char**argv)
 
   // Text to be encripted
   string text; getline(cin,text); int const TEXTLENG = text.length();
-  //cout << "the original one:" << endl << text << endl;
+  cout << "the original one:" << endl << text << endl;
   
   // Enigma setting up
   int const ROTORNUM = argc - 4;
@@ -55,7 +55,7 @@ int main(int argc, char**argv)
     for(int i = 0; i < ROTORNUM; i++)
       rt[i] = new Rotor(argv[i+3],argv[argc-1]); // argv[argc-1] is the starting position file;
 
-
+    
     // Encription
     //cout << "encription:"<<endl;
     for(int i = 0; i < TEXTLENG; i++)
@@ -71,8 +71,8 @@ int main(int argc, char**argv)
         return INVALID_INPUT_CHARACTER;
       }
 
+   
     /*
-    
     // decription
     cout << endl << "decription:"<<endl;
     for(int i = 0; i < ROTORNUM; i++)

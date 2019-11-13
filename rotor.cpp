@@ -20,7 +20,7 @@ bool Rotor::IsLegalContact(int mapping[], int notch[])
       {
         cerr << "Invalid mapping of input " << j << " to output " << mapping[i]
              << " (output " << mapping[i] << " is already mapped to from input "
-             << i << ") in in rotor file rotor.rot"
+             << i << ") in in rotor file rotor.rot "
              << endl;
         return false;
       }
@@ -197,8 +197,8 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
   int rtPos_temp[currentRotorNum-1];
   for(int i = 0; i < currentRotorNum; i++) rtPos_temp[i] = -1;
   
-  int i; // counter
-  for(i = 0; !ipfile.eof(); i++)
+  //int i; // counter
+  for(int i = 0; !ipfile.eof(); i++)
   {
     ipfile.get(current); next = ipfile.peek();
 
@@ -221,10 +221,6 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
       }
       else if(IsWhiteSpace(next)) // current is a digit, next is a ws: a one-digit number
       {
-        // if(i == rotorLabel)
-        // {
-        //   startingPos = DigitChar2Int(current); break;
-        // }
         rtPos_temp[i] = DigitChar2Int(current);
         
         ipfile.get(current); ipfile >> ws;
@@ -251,8 +247,8 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
          << " in rotor position file: rotor.pos" << endl;
     return NO_ROTOR_STARTING_POSITION;
   }
-  else startingPos = rtPos_temp[rotorLabel];
-         
+  else
+    startingPos = rtPos_temp[rotorLabel];    
   //=== 4. Everything's Done
   ipfile.close(); isStartingPosLoaded = true;
   return NO_ERROR;
