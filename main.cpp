@@ -126,28 +126,18 @@ char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& r
         rt[i+1]->RotateDueToNotch(flag);
     }
 
+    //=======Circuit Close now!=========
     // Plugboard Swapping
     pb.SwapLetters(ch);
 
     // Rotor Mapping
-    for(int i = 0; i < rtNum; i++)
-      {
-        rt[i]->MapForwards(ch); // mapping forward
-        // for(int j = i; j < rtNum; j++) // check if the subsequent rotors need rotations
-        //   {
-        //     flag = rt[j]->IsNotchAtTop();
-        //     if(!flag) break;
-        //     else if(j != rtNum-1)
-        //       rt[j+1]->RotateDueToNotch(flag);
-        //   }
-      }
+    for(int i = 0; i < rtNum; i++) rt[i]->MapForwards(ch);
 
     // Reflector
     rf.SwapLetters(ch);
 
     // Rotor maping backwards
-    for(int i = rtNum-1; i >= 0; i--) 
-      rt[i]->MapBackwards(ch);
+    for(int i = rtNum-1; i >= 0; i--)  rt[i]->MapBackwards(ch);
 
     // Plugboard again
     pb.SwapLetters(ch);

@@ -18,9 +18,9 @@ bool Rotor::IsLegalContact(int mapping[], int notch[])
     for(int j = i+1; j < 26; j++)
       if(mapping[i] == mapping[j])
       {
-        cerr << "Invalid mapping of input " << i << " to output " << j
-             << " (output " << j << " is already mapped to from input "
-             << mapping[i] << ") in in rotor file rotor.rot"
+        cerr << "Invalid mapping of input " << j << " to output " << mapping[i]
+             << " (output " << mapping[i] << " is already mapped to from input "
+             << i << ") in in rotor file rotor.rot"
              << endl;
         return false;
       }
