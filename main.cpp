@@ -65,7 +65,9 @@ int main(int argc, char**argv)
         continue;
       else
       {
-        cerr << "INVALID INPUT CHARACTER";
+         cerr << text[i]
+             << " is not a valid input character (input characters must be upper case letters A-Z)!"
+             << endl;
         return INVALID_INPUT_CHARACTER;
       }
     /*

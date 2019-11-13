@@ -17,7 +17,13 @@ bool Rotor::IsLegalContact(int mapping[], int notch[])
   for(int i = 0; i < 26; i++)
     for(int j = i+1; j < 26; j++)
       if(mapping[i] == mapping[j])
+      {
+        cerr << "Invalid mapping of input " << i << " to output " << j
+             << " (output " << j << " is already mapped to from input "
+             << mapping[i] << ") in in rotor file rotor.rot"
+             << endl;
         return false;
+      }
   
   // Notch postions should also be unique
   for(int i = 0; i < 26 && notch[i]!=-1; i++)
@@ -142,16 +148,14 @@ int Rotor::LoadConfig(const char* rtConfigFilename)
     
   //=== 3. Test if the file attemp to illegaly connect a contact and if it has notch positions
 
-  if(!IsLegalContact(mapping_temp, notch_temp))
+  if(i < 26)// less than 26 parameters in the config
   {
-    if(i < 26)// less than 26 parameters in the config
-      cerr << "Not all inputs mapped in rotor file: rotor.rot" << endl;
-    else // has exactly or more than 26 parameters
-      cerr << "Invalid mapping of input 13 to output 3"
-           <<"(output 3 is already mapped to from input 6) in"
-           << endl;
+    cerr << "Not all inputs mapped in rotor file: rotor.rot" << endl;
     return INVALID_ROTOR_MAPPING;
   }
+
+  if(!IsLegalContact(mapping_temp, notch_temp)) // equals or more than 26 parameters
+   return INVALID_ROTOR_MAPPING;
 
   //=== 4. Everything's Done
   ipfile.close(); isConfigLoaded = true;
