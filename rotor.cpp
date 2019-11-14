@@ -34,44 +34,48 @@ bool Rotor::IsLegalContact(int mapping[], int notch[])
 }
 
 
-/* Functionality 2: Rotate the rightmost rotor */
+/* Functionality 2: Rotate the  rotor */
 void Rotor::Rotate()
 {
- 
   int temp = 0;
-  for(int i = 25; i >= 0; i--)
+  for(int i = 0; i < 26; i++)
   {
-    if(i == 25)
-      temp = letterAtAbsPos[i];
+    if(i == 0)
+      temp = curRtMap[i];
     
-    if(i > 0) letterAtAbsPos[i] = letterAtAbsPos[i-1];
-    else letterAtAbsPos[i] = temp;
-  } 
+    if(i < 25) curRtMap[i] = curRtMap[i+1];
+    else curRtMap[i] = temp;
+  }
+  
+  // Increment the top position of the rotor
+  rotorTop++; rotorTop %= 26;
 }
 
 
 /* Constructors*/
-Rotor::Rotor(): isConfigLoaded(false),isStartingPosLoaded(false),startingPos(-1)
+Rotor::Rotor(): isConfigLoaded(false),isStartingPosLoaded(false),startingPos(-1),rotorTop(0)
 {
-  for(int i = 0; i < 26; i++){ letterAtAbsPos[i] = i; mapAbs2Abs[i] = -1; notch[i] = -1; }
+  for(int i = 0; i < 26; i++){ curRtMap[i] = -1; notch[i] = -1; }
+  
   currentRotorNum++; // increment by 1 for each new rotor instance
   rotorLabel = currentRotorNum - 1; // the rotorLabel starts from 0
 }
 
 
 Rotor::Rotor(const char* rtConfigFilename, const char* rtStartingPosilename):
-  isConfigLoaded(false),isStartingPosLoaded(false),startingPos(-1)
+  isConfigLoaded(false),isStartingPosLoaded(false),startingPos(-1),rotorTop(0)
 {
-  for(int i = 0; i < 26; i++){ letterAtAbsPos[i] = i; mapAbs2Abs[i] = -1; notch[i] = -1; }
+  for(int i = 0; i < 26; i++){ curRtMap[i] = -1; notch[i] = -1; }
+  
   currentRotorNum++; // increment by 1 for each new rotor instance
   rotorLabel = currentRotorNum - 1; // the rotorLabel starts from 0
 
   // Load configs
-  int e = this->LoadConfig(rtConfigFilename); if(e) exit(e);
-  e = this->LoadStartingPos(rtStartingPosilename); if(e) exit(e);
+  int e = LoadConfig(rtConfigFilename); if(e) exit(e);
+  e = LoadStartingPos(rtStartingPosilename); if(e) exit(e);
 
   // Set starting position of the rotor
-  this->SetPosToStartingPos();
+  SetPosToStartingPos();
 }
 
 
@@ -89,8 +93,9 @@ int Rotor::LoadConfig(const char* rtConfigFilename)
   //=== 2. Get the numbers (the letters) from the texture file
   char current, next; // current and next char read from the file
   ipfile >> ws; // filestream starts from first non-ws char
-  int mapping_temp[26]; // mapping between absolue positions e.g. from 12 o'clock to 5 o'clock
-  int notch_temp[26]; // // an array of letters who have notches
+
+  int mapping_temp[26]; // content in the config file for the mapping
+  int notch_temp[26]; // notches
   for(int i = 0; i < 26; i++){ mapping_temp[i] = -1; notch_temp[i] = -1; }
   
   int i; // counter
@@ -143,24 +148,24 @@ int Rotor::LoadConfig(const char* rtConfigFilename)
   }
     
   //=== 3. Test if the file attemp to illegaly connect a contact and if it has notch positions
-
   if(i < 26)// less than 26 parameters in the config
   {
     cerr << "Not all inputs mapped in rotor file: rotor.rot" << endl;
     return INVALID_ROTOR_MAPPING;
   }
 
-  if(!IsLegalContact(mapping_temp, notch_temp)) // equals or more than 26 parameters
+  if(!IsLegalContact(mapping_temp, notch_temp)) // has >=  26 parameters but has ilegal contacts 
    return INVALID_ROTOR_MAPPING;
 
   //=== 4. Everything's Done
   ipfile.close(); isConfigLoaded = true;
+  
   for(int i = 0; i < 26; i++)
   {
-    mapAbs2Abs[i] = mapping_temp[i];
-    // letterAtAbsPos[i] = mapping_temp[i];
-    notch[i] = notch_temp[i]; 
+    curRtMap[i] = mapping_temp[i] - i; // store the mapping in terms of relative positions 
+    notch[i] = notch_temp[i];
   }
+  
   return NO_ERROR;
 }
 
@@ -225,7 +230,7 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
     }
   }
 
-  //=== 3. Check if there is a starting position  
+  //=== 3. Check if there is a starting position for this rotor
   if(rtPos_temp[rotorLabel] == -1)
   {
     cerr << "No starting position for rotor " << rotorLabel
@@ -234,8 +239,10 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
   }
   else
     startingPos = rtPos_temp[rotorLabel];    
+
   //=== 4. Everything's Done
   ipfile.close(); isStartingPosLoaded = true;
+  
   return NO_ERROR;
 }
 
@@ -243,9 +250,14 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
 /* Set the Rotor's position to the designated starting position */
 void Rotor::SetPosToStartingPos()
 {
-  if(isStartingPosLoaded) // only allow to set if the staring position is given
-    while(letterAtAbsPos[0] != startingPos)
-      Rotate();
+  if(isStartingPosLoaded) // only set if the staring position is given
+  {
+    for(int i = 0; i < 26; i++)
+    {
+      if(rotorTop != startingPos) Rotate(); // rotorTop've got updated as well
+      else break;
+    }
+  }
   else return;
 }
 
@@ -254,19 +266,11 @@ void Rotor::SetPosToStartingPos()
 */
 void Rotor::MapForwards(char& ch)
 {
-  int ch0Based = ch - 65; // convert the lettter ch into 0-based from int
+  int ch0Based = ch - 'A'; // convert the lettter ch into 0-based from int
   if(isConfigLoaded)   
   { 
-    // Cicuit close, perform the mapping
-    int preimageAbsPos = 0; // abs pos of the source letter mapping from
-    for(int i = 0; i < 26; i++)
-      if(letterAtAbsPos[i] == ch0Based) // locate the Abs pos of ch
-      {
-        preimageAbsPos = i;
-        break;
-      }
-    int imageAbsPos = mapAbs2Abs[preimageAbsPos]; // abs pos of the destination letter
-    ch = Letter0BasedInt2Char(letterAtAbsPos[imageAbsPos]);
+    int image = (curRtMap[ch0Based]+ch0Based+26) % 26; // the image of the mapping in 0-based form
+    ch = Letter0BasedInt2Char(image);
   }
   else return;
 }
@@ -275,52 +279,44 @@ void Rotor::MapForwards(char& ch)
 /* Functionality 1.2: Map the letters backwards */
 void Rotor::MapBackwards(char& ch)
 {
-  int ch0Based = ch - 65; // convert the lettter ch into 0-based from int
-  
+  int ch0Based = ch - 'A'; // convert the lettter ch into 0-based from int
   if(isConfigLoaded)   
   {
-    int imageAbsPos = 0; // the Abs pos of the image (destination character being mapped into)
-    int preimageAbsPos = 0; // the Abs pos of the preimage (source character mapping from)
+    int preimage = 0; // the preimage of the mapping in 0-based form
     for(int i = 0; i < 26; i++)
-      if(letterAtAbsPos[i] == ch0Based) // locate the abs pos of the ch (image)
+    {
+      if((curRtMap[i]+i+26) % 26 == ch0Based)
       {
-        imageAbsPos = i;
+        preimage = i;
         break;
       }
-    
-    for(int i = 0; i < 26; i++) // locate the abs pos of the preimage of ch
-      if(imageAbsPos == mapAbs2Abs[i])
-      {
-        preimageAbsPos = i;
-        break;
-      }
-
-    ch = Letter0BasedInt2Char(letterAtAbsPos[preimageAbsPos]);
+    }
+    ch = Letter0BasedInt2Char(preimage);
   }
   else return;
 }
 
 
-/* Rotate due to the rotor to its right whose absolute position hit a notch 
-   Flag is the returned value of the DoMapping() member of the rotor to its right */
+/* Rotate due to the rotor to its right whose top position hits a notch 
+   Flag is the returned value of the IsNotchAtTop() of the rotor to its right */
 void Rotor::RotateDueToNotch(bool flag)
 {
-    
   if(flag) Rotate();
   else return;
 }
 
 
-/* Check if there is a notch at the top absolute reference posiion*/
+/* Check if there is a notch at the top absolute reference posiion, return true if so, false otherwise
+*/
 bool Rotor::IsNotchAtTop()
 {
-  // Check if there is a notch at the top absolute reference position
-  for(int i = 0; notch[i]!=-1 && i < 26; i++)
-    if(notch[i] >= 0 && notch[i] <= 25)
-      if(notch[i] == letterAtAbsPos[0])
-        return true; // telling the rotor to the left that it should also rotate  
+  for(int i = 0; i < 26; i++)
+  {
+    if(notch[i] == rotorTop) return true;
+  }
   return false;
 }
+
 
 /* Destructor */
 Rotor::~Rotor(){ currentRotorNum--; }

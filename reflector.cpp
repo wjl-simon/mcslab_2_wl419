@@ -11,12 +11,12 @@ using namespace std;
 /* Return false if the file connects a contact with itself or with more than one other  */
 bool Reflector:: IsLegalContact(char mapping[])
 {
-  // It's legal means every digit is unique
-  for(int i = 0; i < 26; i++) // should have exacly 13 pairs of digits
+  // It's legal means every digit is unique and it should have exacly 13 pairs of digits
+  for(int i = 0; i < 26; i++) 
+  {
     for(int j = i+1; j < 26; j++)
-      if(mapping[i] == mapping[j] || mapping[i] == '?' || mapping[j] == '?')
-        return false;
-    
+      if(mapping[i] == mapping[j] || mapping[i] == '?' || mapping[j] == '?') return false;
+  } 
   return true;
 }
 
@@ -33,7 +33,7 @@ Reflector::Reflector(const char* rfConfigFileName): isLoaded(false)
   for(int i = 0; i < 26; i++) letters[i] = '?';
 
   // Load Config
-  int e = this->LoadConfig(rfConfigFileName); if(e) exit(e);
+  int e = LoadConfig(rfConfigFileName); if(e) exit(e);
 }
 
 
@@ -52,10 +52,10 @@ int Reflector::LoadConfig(const char* rfConfigFileName)
   //=== 2. Get the numbers (the letters) from the texture file
   char current, next; // current and next char from the file
   ipfile >> ws; // filestream starts from first non-ws char
+  
   char letters_temp[26]; // temporary copy for the letters array
-
+  
   int i; // counter
-  //for(i = 0; i < 26 && !ipfile.eof(); i++)
   for(i = 0;!ipfile.eof(); i++)
   {
     ipfile.get(current); next = ipfile.peek();
@@ -113,7 +113,7 @@ int Reflector::LoadConfig(const char* rfConfigFileName)
   //=== 3. Test if the number of numbers is (less than) 26 (13 pairs)
   if(i != 26)
   {
-    if(i%2 == 0) // even
+    if(i%2 == 0) // even number of numbers
     {
       cerr << "Insufficient number of mappings in reflector file: reflector.rf" << endl;
       return INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
@@ -134,8 +134,8 @@ int Reflector::LoadConfig(const char* rfConfigFileName)
     
   //=== 5. Everything's Done
   ipfile.close(); isLoaded = true;
-  for(int i = 0; i < 26; i++)
-    letters[i] = letters_temp[i];
+  for(int i = 0; i < 26; i++)  letters[i] = letters_temp[i];
+
   return NO_ERROR;
 }
 
@@ -146,6 +146,7 @@ void Reflector::SwapLetters(char& letter)
   if(isLoaded) // if sucessfully loaded
   {
     for(int i = 0; i <= 26 - 2; i=i+2) // the 13th pair is element number 24 and 25
+    {
       if(letter == letters[i])
       {
         letter = letters[i+1];
@@ -156,6 +157,7 @@ void Reflector::SwapLetters(char& letter)
         letter = letters[i];
         return;
       }
+    }
   }
   else return; // do nothing if loading failed
 }

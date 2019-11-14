@@ -13,10 +13,10 @@ bool Plugboard:: IsLegalContact(char mapping[])
 {
   // It's legal means every digit is unique
   for(int i = 0; i < letterNum; i++)
+  {
     for(int j = i+1; j < letterNum; j++)
-      if(mapping[i] == mapping[j])
-        return false;
-    
+      if(mapping[i] == mapping[j]) return false;
+  }
   return true;
 }
 
@@ -35,7 +35,7 @@ Plugboard:: Plugboard(const char* pbConfigFileName): letterNum(0), isLoaded(fals
   for(int i = 0; i < 26; i++) letters[i] = '?';
 
   // Load config
-  int e = this->LoadConfig(pbConfigFileName); if(e) exit(e);
+  int e = LoadConfig(pbConfigFileName); if(e) exit(e);
 }
 
 
@@ -54,12 +54,11 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
   //=== 2. Get the numbers (the letters) from the texture file
   char current, next; // current and next char from the file
   ipfile >> ws; // filestream starts from first non-ws char
+  
   char letters_temp[26]; // temporary copy for the letters array
-
   for(int i = 0; i < 26; i++) letters_temp[i] = '?';
 
   int i; // counter
-  //for(i = 0; i < 26 && !ipfile.eof(); i++)
   for(i = 0;!ipfile.eof(); i++)
   {
     ipfile.get(current); next = ipfile.peek();
@@ -116,7 +115,7 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
   
   //=== 3. Test if the number of numbers is not even
   letterNum = i; // if the program runs here then the numbers in the file shall be valid
-  //  cout << "letter number is " << letterNum << endl;
+  
   if(letterNum % 2 != 0)
   {
     cerr << "Incorrect number of parameters in plugboard file plugboard.pb" << endl;
@@ -132,8 +131,8 @@ int Plugboard::LoadConfig(const char* pbConfigFileName)
     
   //=== 5. Everything's Done
   ipfile.close(); isLoaded = true;
-  for(int i = 0; i < 26; i++)
-    letters[i] = letters_temp[i];
+  for(int i = 0; i < 26; i++) letters[i] = letters_temp[i];
+
   return NO_ERROR;
 }
 

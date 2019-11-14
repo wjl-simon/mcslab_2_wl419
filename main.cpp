@@ -9,17 +9,23 @@
 
 using namespace std;
 
-// The enigma machine
-char EnigmaMachine(char &ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& rf);
+
+/* The enigma encripts one character one time only while the state of the machine is preserved
+   rt[]: an array of newed rotors where rt[0] is the left most one (null if no rotors)
+   rtNum: number of rotors
+ */
+void EnigmaMachine(char &ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& rf);
+
 
 int main(int argc, char**argv)
 {
 
   // Text to be encripted
-  string text; getline(cin,text); int const TEXTLENG = text.length();
+  string plainText; getline(cin,plainText); int const TEXTLENG = plainText.length();
   
   // Enigma setting up
-  int const ROTORNUM = argc - 4;
+  int const ROTORNUM = argc - 4; // rotor numbers
+  
   if(ROTORNUM < 0)
   {
     cerr << "usage: enigma plugboard-file reflector-file (<rotor-file>)* rotor-positions" << endl;
@@ -32,17 +38,21 @@ int main(int argc, char**argv)
 
     // Encription
     for(int i = 0; i < TEXTLENG; i++)
-      if(text[i]>='A' && text[i]<='Z')
-        cout << EnigmaMachine(text[i],pb,nullptr,ROTORNUM,rf);
-      else if(IsWhiteSpace(text[i]))
+    {
+      if(plainText[i]>='A' && plainText[i]<='Z')
+        EnigmaMachine(plainText[i],pb,nullptr,ROTORNUM,rf);
+      else if(IsWhiteSpace(plainText[i]))
         continue;
       else
       {
-        cerr << text[i]
-             << " is not a valid input character (input characters must be upper case letters A-Z)!"
-             << endl;
+        cerr << plainText[i] << " is not a valid input character (input characters must"
+             <<" be upper case letters A-Z)!" << endl;
         return INVALID_INPUT_CHARACTER;
       }
+    }
+
+    // Print the cipher text
+    cout << plainText << endl;
   }
   else // have one or more rotors
   {
@@ -50,42 +60,29 @@ int main(int argc, char**argv)
     Plugboard pb(argv[1]); Reflector rf(argv[2]);
 
     // Rotors
+    // !!! NB: rt[0] is the leftmost rotor while the signal firstly enters the rightmost rotor
     Rotor* rt[ROTORNUM];
     for(int i = 0; i < ROTORNUM; i++)
        rt[i] = new Rotor(argv[i+3],argv[argc-1]); // argv[argc-1] is the starting position file;
 
     // Encription
     for(int i = 0; i < TEXTLENG; i++)
-      if(text[i]>='A' && text[i]<='Z')
-        cout << EnigmaMachine(text[i],pb,rt,ROTORNUM,rf);
-      else if(IsWhiteSpace(text[i]))
+    {
+      if(plainText[i]>='A' && plainText[i]<='Z')
+        EnigmaMachine(plainText[i],pb,rt,ROTORNUM,rf);
+      else if(IsWhiteSpace(plainText[i]))
         continue;
       else
       {
-        cerr << text[i]
-             << " is not a valid input character (input characters must be upper case letters A-Z)!"
-             << endl;
+        cerr << plainText[i] << " is not a valid input character (input characters must"
+             <<" be upper case letters A-Z)!" << endl;
         return INVALID_INPUT_CHARACTER;
       }
+    }
 
-    /*    
-    // decription
-    cout << endl << "decription:"<<endl;
-    for(int i = 0; i < ROTORNUM; i++)
-      rt[i]->SetPosToStartingPos();
-        
-    for(int i = 0; i < TEXTLENG; i++)
-      if(text[i]>='A' && text[i]<='Z')
-        cout << EnigmaMachine(text[i],pb,rt,ROTORNUM,rf);
-      else if(IsWhiteSpace(text[i]))
-        continue;
-      else
-      {
-        cerr << "INVALID INPUT CHARACTER";
-        return INVALID_INPUT_CHARACTER;
-      }
-    */
-    
+    // Print the cipher text
+    cout << plainText << endl;
+
     // delete the rts
     for(int i = 0; i < ROTORNUM; i++)
       delete rt[i];
@@ -94,24 +91,25 @@ int main(int argc, char**argv)
   return 0;
 }
 
-
-
-
-char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& rf)
+/* The enigma encripts one character one time only while the state of the machine is preserved
+   rt[]: an array of newed rotors where rt[0] is the left most one (null if no rotors)
+   rtNum: number of rotors
+ */
+void EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& rf)
 {
-  if(rt)
+  if(rt) // has rotors
   {
     // When a key is pressed a rotation happens at the rightmost rotor before closing the circuit
-    rt[0]->Rotate();
+    rt[rtNum-1]->Rotate();
 
     // Rotor engagement
     bool flag = false;
-    for(int i = 0; i < rtNum; i++)
+    for(int i = rtNum-1; i >= 0; i--)
     {
       flag = rt[i]->IsNotchAtTop();
-      if(!flag) break;
-      if(i != rtNum-1)
-        rt[i+1]->RotateDueToNotch(flag);
+      if(!flag) break; // if one rotor's notch isn't at the top, all rotors to its left won't rotate
+      
+      if(i != 0) rt[i-1]->RotateDueToNotch(flag);
     }
 
     //===Circuit Close now!===
@@ -119,13 +117,13 @@ char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& r
     pb.SwapLetters(ch);
 
     // Rotor Mapping forwards
-    for(int i = 0; i < rtNum; i++) rt[i]->MapForwards(ch);
+    for(int i = rtNum-1; i >= 0; i--) rt[i]->MapForwards(ch);
 
     // Reflector
     rf.SwapLetters(ch);
 
     // Rotor maping backwards
-    for(int i = rtNum-1; i >= 0; i--)  rt[i]->MapBackwards(ch);
+    for(int i = 0; i < rtNum; i++)  rt[i]->MapBackwards(ch);
 
     // Plugboard again
     pb.SwapLetters(ch);
@@ -135,6 +133,4 @@ char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& r
     // Plugboard Swapping, Reflector, Plugboard again 
     pb.SwapLetters(ch); rf.SwapLetters(ch); pb.SwapLetters(ch);
   }
-  
-  return ch;
 }
