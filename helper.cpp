@@ -1,5 +1,5 @@
 /*
-  Helper free functions for the class Plugboard, Rotor and Reflector
+  Helper free functions for the enigma machine, class Plugboard, Rotor and Reflector
 */
 
 #include "helper.h"
@@ -22,15 +22,16 @@ bool IsDigit(char ch)
 }
 
 
-/* Convert 0-based letters (in char) into one Latin character (in char) */
-char Letter0Based2Char(char num) { return (char)(num - 48 + 65); }
+/* Convert 0-based letters (in char) into one Latin character (in char) e.g. '1''0' -> 'K' */
+char Letter0Based2Char(char num) { return (char)(num - '0' + 'A'); }
 
-char Letter0Based2Char(char tens, char ones){ return (char)(10 * (tens-48) + (ones-48) + 65); }
-
-
-/* Convert digit (0-9) from char('0','1','2') into int (0,1,2) */
-int DigitChar2Int(char digit) { return digit-48; }
+char Letter0Based2Char(char tens, char ones)
+{ return static_cast<char>(10 * (tens-'0') + (ones-'0') + 'A'); }
 
 
-/* Convert 0-based letters (int) into Latin letters (char), for Rotor */
-char Letter0BasedInt2Char(int num){ return (char)(num+65); }
+/* Convert digit (0-9) from char(e.g. '0','1','2') into int (e.g. 0,1,2) */
+int DigitChar2Int(char digit) { return digit-'0'; }
+
+
+/* Convert 0-based letters (int) into Latin letters (char), for Rotor class */
+char Letter0BasedInt2Char(int num){ return static_cast<char>(num+'A'); }

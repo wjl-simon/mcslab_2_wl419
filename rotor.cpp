@@ -7,6 +7,7 @@
 
 using namespace std;
 
+
 int Rotor::currentRotorNum = 0;
 
 
@@ -15,7 +16,9 @@ bool Rotor::IsLegalContact(int mapping[], int notch[])
 {
   // It's legal means every digit in currentMap is unique
   for(int i = 0; i < 26; i++)
+  {
     for(int j = i+1; j < 26; j++)
+    {
       if(mapping[i] == mapping[j])
       {
         cerr << "Invalid mapping of input " << j << " to output " << mapping[i]
@@ -24,31 +27,16 @@ bool Rotor::IsLegalContact(int mapping[], int notch[])
              << endl;
         return false;
       }
+    }
+  }
   
   // Notch postions should also be unique
   for(int i = 0; i < 26 && notch[i]!=-1; i++)
-    for(int j = i+1; j < 26 && notch[j]!=-1; j++)
-      if(notch[i] == notch[j])
-        return false;
-  return true;
-}
-
-
-/* Functionality 2: Rotate the  rotor */
-void Rotor::Rotate()
-{
-  int temp = 0;
-  for(int i = 0; i < 26; i++)
   {
-    if(i == 0)
-      temp = curRtMap[i];
-    
-    if(i < 25) curRtMap[i] = curRtMap[i+1];
-    else curRtMap[i] = temp;
+    for(int j = i+1; j < 26 && notch[j]!=-1; j++)
+      if(notch[i] == notch[j]) return false;
   }
-  
-  // Increment the top position of the rotor
-  rotorTop++; rotorTop %= 26;
+  return true;
 }
 
 
@@ -95,11 +83,11 @@ int Rotor::LoadConfig(const char* rtConfigFilename)
   ipfile >> ws; // filestream starts from first non-ws char
 
   int mapping_temp[26]; // content in the config file for the mapping
-  int notch_temp[26]; // notches
+  int notch_temp[26]; // notches  
   for(int i = 0; i < 26; i++){ mapping_temp[i] = -1; notch_temp[i] = -1; }
   
   int i; // counter
-  for(i = 0; i < 52 && !ipfile.eof(); i++)
+  for(i = 0; i < 26*2 && !ipfile.eof(); i++)
   {
     ipfile.get(current); next = ipfile.peek();
 
@@ -110,9 +98,9 @@ int Rotor::LoadConfig(const char* rtConfigFilename)
         // Test if this two-digit number is between 10 and 25
         if(current=='1' || (current=='2' && next>='0' && next<='5'))
         {
-          if(i < 26)
+          if(i < 26) // the first 26 parameters are for the mapping
             mapping_temp[i] = 10 * DigitChar2Int(current) + DigitChar2Int(next); 
-          else
+          else // the rest is for the notches
             notch_temp[i-26] = 10 * DigitChar2Int(current) + DigitChar2Int(next);
           
           ipfile.get(current); ipfile >> ws; // skip the "next" to get the one after
@@ -125,9 +113,9 @@ int Rotor::LoadConfig(const char* rtConfigFilename)
       }
       else if(IsWhiteSpace(next)) // current is a digit, next is a ws: a one-digit number
       {
-        if(i < 26)
+        if(i < 26) // the first 26 parameters are for the mapping
           mapping_temp[i] = DigitChar2Int(current);
-        else
+        else // the rest is for the notches
           notch_temp[i-26] = DigitChar2Int(current);
         
         ipfile.get(current); ipfile >> ws;
@@ -185,10 +173,9 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
   char current, next; // current and next char read from the file
   ipfile >> ws; // filestream starts from first non-ws char
 
-  int rtPos_temp[currentRotorNum-1];
+  int rtPos_temp[currentRotorNum-1]; // temp copy for rotor positions
   for(int i = 0; i < currentRotorNum; i++) rtPos_temp[i] = -1;
   
-  //int i; // counter
   for(int i = 0; !ipfile.eof(); i++)
   {
     ipfile.get(current); next = ipfile.peek();
@@ -247,6 +234,24 @@ int Rotor::LoadStartingPos(const char* rtStartPosFilename)
 }
 
 
+/* Functionality 2: Rotate a  rotor */
+void Rotor::Rotate()
+{
+  int temp = 0;
+  for(int i = 0; i < 26; i++)
+  {
+    if(i == 0)
+      temp = curRtMap[i];
+    
+    if(i < 25) curRtMap[i] = curRtMap[i+1];
+    else curRtMap[i] = temp;
+  }
+  
+  // Increment the top position of the rotor
+  rotorTop++; rotorTop %= 26;
+}
+
+
 /* Set the Rotor's position to the designated starting position */
 void Rotor::SetPosToStartingPos()
 {
@@ -262,14 +267,36 @@ void Rotor::SetPosToStartingPos()
 }
 
 
+/* Check if there is a notch at the top absolute reference posiion, return true if so, false otherwise
+*/
+bool Rotor::IsNotchAtTop()
+{
+  for(int i = 0; i < 26; i++)
+  {
+    if(notch[i] == rotorTop) return true;
+  }
+  return false;
+}
+
+
+/* Rotate due to the rotor to its right whose top position hits a notch 
+   Flag is the returned value of the IsNotchAtTop() of the rotor to its right */
+void Rotor::RotateDueToNotch(bool flag)
+{
+  if(flag) Rotate();
+  else return;
+}
+
+
 /* Functionality 1.1: Map the letters forwards: return if the rotor to its next should also rotate 
 */
 void Rotor::MapForwards(char& ch)
 {
   int ch0Based = ch - 'A'; // convert the lettter ch into 0-based from int
   if(isConfigLoaded)   
-  { 
-    int image = (curRtMap[ch0Based]+ch0Based+26) % 26; // the image of the mapping in 0-based form
+  {
+    // The image of the mapping in 0-based form
+    int image = (curRtMap[ch0Based]+ch0Based+26) % 26; // +26 to avoid negative before doing %
     ch = Letter0BasedInt2Char(image);
   }
   else return;
@@ -294,27 +321,6 @@ void Rotor::MapBackwards(char& ch)
     ch = Letter0BasedInt2Char(preimage);
   }
   else return;
-}
-
-
-/* Rotate due to the rotor to its right whose top position hits a notch 
-   Flag is the returned value of the IsNotchAtTop() of the rotor to its right */
-void Rotor::RotateDueToNotch(bool flag)
-{
-  if(flag) Rotate();
-  else return;
-}
-
-
-/* Check if there is a notch at the top absolute reference posiion, return true if so, false otherwise
-*/
-bool Rotor::IsNotchAtTop()
-{
-  for(int i = 0; i < 26; i++)
-  {
-    if(notch[i] == rotorTop) return true;
-  }
-  return false;
 }
 
 

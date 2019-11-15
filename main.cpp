@@ -81,7 +81,7 @@ int main(int argc, char**argv)
     }
 
     // Print the cipher text
-    cout << plainText << endl;
+    cout << plainText;
 
     // delete the rts
     for(int i = 0; i < ROTORNUM; i++)
