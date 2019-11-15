@@ -22,12 +22,6 @@ bool Reflector:: IsLegalContact(char mapping[])
 
 
 /* Constructors */
-Reflector::Reflector(): isLoaded(false)
-{
-  for(int i = 0; i < 26; i++) letters[i] = '?';
-}
-
-
 Reflector::Reflector(const char* rfConfigFileName): isLoaded(false)
 {
   for(int i = 0; i < 26; i++) letters[i] = '?';
@@ -149,15 +143,12 @@ void Reflector::SwapLetters(char& letter)
     {
       if(letter == letters[i])
       {
-        letter = letters[i+1];
-        return;
+        letter = letters[i+1]; return;
       }
       else if(letter == letters[i+1])
       {
-        letter = letters[i];
-        return;
+        letter = letters[i]; return;
       }
     }
   }
-  else return; // do nothing if loading failed
 }

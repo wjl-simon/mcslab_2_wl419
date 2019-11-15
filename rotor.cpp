@@ -42,15 +42,6 @@ bool Rotor::IsLegalContact(int mapping[], int notch[])
 
 
 /* Constructors*/
-Rotor::Rotor(): isConfigLoaded(false),isStartingPosLoaded(false),startingPos(-1),rotorTop(0)
-{
-  for(int i = 0; i < 26; i++){ curRtMap[i] = -1; notch[i] = -1; }
-  
-  currentRotorNum++; // increment by 1 for each new rotor instance
-  rotorLabel = currentRotorNum - 1; // the rotorLabel starts from 0
-}
-
-
 Rotor::Rotor(const char* rtConfigFilename, const char* rtStartingPosilename):
   isConfigLoaded(false),isStartingPosLoaded(false),startingPos(-1),rotorTop(0)
 {
@@ -261,7 +252,7 @@ void Rotor::SetPosToStartingPos()
     for(int i = 0; i < 26; i++)
     {
       if(rotorTop != startingPos) Rotate(); // rotorTop've got updated as well
-      else break;
+      else return;
     }
   }
   else return;
@@ -319,6 +310,7 @@ void Rotor::MapBackwards(char& ch)
         break;
       }
     }
+    
     ch = Letter0BasedInt2Char(preimage);
   }
   else return;

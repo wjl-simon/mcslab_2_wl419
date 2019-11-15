@@ -14,7 +14,6 @@ class Reflector
   
  public:
   /* Constructors */
-  Reflector();
   Reflector(const char* rfConfigFileName);
   
   /* Load the reflector configuration */

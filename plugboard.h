@@ -16,7 +16,6 @@ class Plugboard
   
  public:
   /* Constructors */
-  Plugboard();
   Plugboard(const char* pbConfigFileName);
   
   /* Load the plugboard configuration */

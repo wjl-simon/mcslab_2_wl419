@@ -62,7 +62,7 @@ int main(int argc, char**argv)
     for(int i = 0; i < ROTORNUM; i++)
        rt[i] = new Rotor(argv[i+3],argv[argc-1]); // argv[argc-1] is the starting position file;
 
-    // Encription`
+    // Encription
     for(int i = 0; i < TEXTLENG; i++)
     {
       if(text[i]>='A' && text[i]<='Z')
@@ -78,8 +78,7 @@ int main(int argc, char**argv)
     }
 
     // delete the rts
-    for(int i = 0; i < ROTORNUM; i++)
-      delete rt[i];
+    for(int i = 0; i < ROTORNUM; i++)  delete rt[i];
   }
   
   return 0;

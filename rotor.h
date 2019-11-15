@@ -18,7 +18,6 @@ class Rotor
   
  public:
   /* Constructors*/
-  Rotor();
   Rotor(const char* rtConfigFilename, const char* rtStartingPosilename);
 
   /* Load the configuration for this rotor  */

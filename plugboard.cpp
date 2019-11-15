@@ -22,13 +22,6 @@ bool Plugboard:: IsLegalContact(char mapping[])
 
 
 /* Constructors */
-Plugboard:: Plugboard(): letterNum(0), isLoaded(false)
-{
-  // Initilise the letters array
-  for(int i = 0; i < 26; i++) letters[i] = '?';
-}
-
-
 Plugboard:: Plugboard(const char* pbConfigFileName): letterNum(0), isLoaded(false)
 {
   // Initilise the letters array
@@ -143,17 +136,16 @@ void Plugboard::SwapLetters(char& letter)
   if(isLoaded) // if sucessfully loaded
   {
     for(int i = 0; i <= letterNum-2; i = i+2)
+    {
       if(letter == letters[i])
       {
-        letter = letters[i+1];
-        return;
+        letter = letters[i+1];  return;
       }
       else if(letter == letters[i+1])
       {
-        letter = letters[i];
-        return;
+        letter = letters[i]; return;
       }
+    }
     // Runs here means there's no mapping for this letter: maps to itself
   }
-  else return; // do nothing if loading failed
 }
