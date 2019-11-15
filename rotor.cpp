@@ -36,6 +36,7 @@ bool Rotor::IsLegalContact(int mapping[], int notch[])
     for(int j = i+1; j < 26 && notch[j]!=-1; j++)
       if(notch[i] == notch[j]) return false;
   }
+  
   return true;
 }
 

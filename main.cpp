@@ -14,7 +14,7 @@ using namespace std;
    rt[]: an array of newed rotors where rt[0] is the left most one (null if no rotors)
    rtNum: number of rotors
  */
-char EnigmaMachine(char &ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& rf);
+char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& rf);
 
 
 int main(int argc, char**argv)
