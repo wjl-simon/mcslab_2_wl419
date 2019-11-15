@@ -14,7 +14,7 @@ using namespace std;
    rt[]: an array of newed rotors where rt[0] is the left most one (null if no rotors)
    rtNum: number of rotors
  */
-void EnigmaMachine(char &ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& rf);
+char EnigmaMachine(char &ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& rf);
 
 
 int main(int argc, char**argv)
@@ -40,7 +40,7 @@ int main(int argc, char**argv)
     for(int i = 0; i < TEXTLENG; i++)
     {
       if(plainText[i]>='A' && plainText[i]<='Z')
-        EnigmaMachine(plainText[i],pb,nullptr,ROTORNUM,rf);
+        cout << EnigmaMachine(plainText[i],pb,nullptr,ROTORNUM,rf);
       else if(IsWhiteSpace(plainText[i]))
         continue;
       else
@@ -50,9 +50,6 @@ int main(int argc, char**argv)
         return INVALID_INPUT_CHARACTER;
       }
     }
-
-    // Print the cipher text
-    cout << plainText << endl;
   }
   else // have one or more rotors
   {
@@ -69,7 +66,7 @@ int main(int argc, char**argv)
     for(int i = 0; i < TEXTLENG; i++)
     {
       if(plainText[i]>='A' && plainText[i]<='Z')
-        EnigmaMachine(plainText[i],pb,rt,ROTORNUM,rf);
+        cout << EnigmaMachine(plainText[i],pb,rt,ROTORNUM,rf);
       else if(IsWhiteSpace(plainText[i]))
         continue;
       else
@@ -79,9 +76,6 @@ int main(int argc, char**argv)
         return INVALID_INPUT_CHARACTER;
       }
     }
-
-    // Print the cipher text
-    cout << plainText;
 
     // delete the rts
     for(int i = 0; i < ROTORNUM; i++)
@@ -95,7 +89,7 @@ int main(int argc, char**argv)
    rt[]: an array of newed rotors where rt[0] is the left most one (null if no rotors)
    rtNum: number of rotors
  */
-void EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& rf)
+char EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& rf)
 {
   if(rt) // has rotors
   {
@@ -133,4 +127,6 @@ void EnigmaMachine(char& ch, Plugboard& pb, Rotor* rt[], int rtNum, Reflector& r
     // Plugboard Swapping, Reflector, Plugboard again 
     pb.SwapLetters(ch); rf.SwapLetters(ch); pb.SwapLetters(ch);
   }
+
+  return ch;
 }
