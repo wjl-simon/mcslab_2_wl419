@@ -31,7 +31,7 @@ int main(int argc, char**argv)
     cerr << "usage: enigma plugboard-file reflector-file (<rotor-file>)* rotor-positions" << endl;
     return INSUFFICIENT_NUMBER_OF_PARAMETERS;
   }
-  else if(argc == 0)
+  else if(ROTORNUM == 0)
   {
     // The plubboard and the relector
     Plugboard pb(argv[1]); Reflector rf(argv[2]);
@@ -45,8 +45,9 @@ int main(int argc, char**argv)
         continue;
       else
       {
-        cerr << text[i] << " is not a valid input character (input characters must"
-             <<" be upper case letters A-Z)!" << endl;
+        cerr << text[i]
+             << " is not a valid input character (input characters must be upper case letters A-Z)!"
+             << endl;
         return INVALID_INPUT_CHARACTER;
       }
     }
@@ -71,14 +72,16 @@ int main(int argc, char**argv)
         continue;
       else
       {
-        cerr << text[i] << " is not a valid input character (input characters must"
-             <<" be upper case letters A-Z)!" << endl;
+        cerr << text[i]
+             << " is not a valid input character (input characters must be upper case letters A-Z)!"
+             << endl;
         return INVALID_INPUT_CHARACTER;
       }
     }
 
     // delete the rts
-    for(int i = 0; i < ROTORNUM; i++)  delete rt[i];
+    for(int i = 0; i < ROTORNUM; i++)
+      delete rt[i];
   }
   
   return 0;
