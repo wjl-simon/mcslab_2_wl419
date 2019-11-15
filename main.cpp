@@ -21,7 +21,7 @@ int main(int argc, char**argv)
 {
 
   // Text to be encripted
-  string plainText; getline(cin,plainText); int const TEXTLENG = plainText.length();
+  string text; getline(cin,text); int const TEXTLENG = text.length();
   
   // Enigma setting up
   int const ROTORNUM = argc - 4; // rotor numbers
@@ -39,13 +39,13 @@ int main(int argc, char**argv)
     // Encription
     for(int i = 0; i < TEXTLENG; i++)
     {
-      if(plainText[i]>='A' && plainText[i]<='Z')
-        cout << EnigmaMachine(plainText[i],pb,nullptr,ROTORNUM,rf);
-      else if(IsWhiteSpace(plainText[i]))
+      if(text[i]>='A' && text[i]<='Z')
+        cout << EnigmaMachine(text[i],pb,nullptr,ROTORNUM,rf);
+      else if(IsWhiteSpace(text[i]))
         continue;
       else
       {
-        cerr << plainText[i] << " is not a valid input character (input characters must"
+        cerr << text[i] << " is not a valid input character (input characters must"
              <<" be upper case letters A-Z)!" << endl;
         return INVALID_INPUT_CHARACTER;
       }
@@ -62,16 +62,16 @@ int main(int argc, char**argv)
     for(int i = 0; i < ROTORNUM; i++)
        rt[i] = new Rotor(argv[i+3],argv[argc-1]); // argv[argc-1] is the starting position file;
 
-    // Encription
+    // Encription`
     for(int i = 0; i < TEXTLENG; i++)
     {
-      if(plainText[i]>='A' && plainText[i]<='Z')
-        cout << EnigmaMachine(plainText[i],pb,rt,ROTORNUM,rf);
-      else if(IsWhiteSpace(plainText[i]))
+      if(text[i]>='A' && text[i]<='Z')
+        cout << EnigmaMachine(text[i],pb,rt,ROTORNUM,rf);
+      else if(IsWhiteSpace(text[i]))
         continue;
       else
       {
-        cerr << plainText[i] << " is not a valid input character (input characters must"
+        cerr << text[i] << " is not a valid input character (input characters must"
              <<" be upper case letters A-Z)!" << endl;
         return INVALID_INPUT_CHARACTER;
       }
